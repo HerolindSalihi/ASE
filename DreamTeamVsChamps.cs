@@ -1,4 +1,8 @@
-public class DreamTeamVsChamps
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+public class DreamTeamVsChamps : IGame
 {
     private string[] lines;
     private string[] headers;
@@ -9,13 +13,17 @@ public class DreamTeamVsChamps
         this.headers = headers;
     }
 
-    public void PlayAgainstChamps()
+    public void Start()  // Implementiert die Start-Methode des IGame-Interfaces
     {
-        // Definieren Sie das Champion-Team (z.B. "DEN" für Denver Nuggets)
-        string champsTeam = "DEN";
+        PlayAgainstChamps();
+    }
+
+    private void PlayAgainstChamps()
+    {
+        string champsTeam = "DEN";  // Champion-Team, z.B. "DEN" für Denver Nuggets
         var champPlayers = lines.Skip(1)
                                 .Select(line => line.Split(','))
-                                .Where(columns => columns[4].Equals(champsTeam))
+                                .Where(columns => columns[4].Equals(champsTeam, StringComparison.OrdinalIgnoreCase))
                                 .OrderByDescending(columns => decimal.Parse(columns.Last()))
                                 .Take(5)
                                 .ToList();
@@ -23,12 +31,18 @@ public class DreamTeamVsChamps
         decimal champsScore = champPlayers.Sum(player => decimal.Parse(player.Last()));
         Console.WriteLine($"Gesamtpunktzahl für {champsTeam} Champs: {champsScore}");
 
-        // Lassen Sie den Benutzer das Dream Team zusammenstellen
         List<decimal> dreamTeamScores = new List<decimal>();
         for (int i = 0; i < 5; i++)
         {
             Console.Write($"Gib den Namen des Spielers {i + 1} für das Dream Team ein: ");
-            string playerName = Console.ReadLine();
+            string? playerName = Console.ReadLine();
+            if (string.IsNullOrEmpty(playerName))
+            {
+                Console.WriteLine("Kein Spielername eingegeben, bitte erneut versuchen.");
+                i--;
+                continue;
+            }
+
             var playerData = lines.Skip(1)
                                   .Select(line => line.Split(','))
                                   .FirstOrDefault(columns => columns[1].Equals(playerName, StringComparison.OrdinalIgnoreCase));
@@ -37,19 +51,24 @@ public class DreamTeamVsChamps
             {
                 Console.WriteLine("Spieler nicht gefunden, bitte erneut versuchen.");
                 i--; // Schritt wiederholen
+                continue;
+            }
+
+            if (decimal.TryParse(playerData.Last(), out decimal playerScore))
+            {
+                dreamTeamScores.Add(playerScore);
+                Console.WriteLine($"{playerName} hinzugefügt mit {playerScore} PTS.");
             }
             else
             {
-                decimal playerScore = decimal.Parse(playerData.Last());
-                dreamTeamScores.Add(playerScore);
-                Console.WriteLine($"{playerName} hinzugefügt mit {playerScore} PTS.");
+                Console.WriteLine("Fehler beim Lesen der Spielerpunkte.");
+                i--;
             }
         }
 
         decimal dreamTeamScore = dreamTeamScores.Sum();
         Console.WriteLine($"Gesamtpunktzahl für Dream Team: {dreamTeamScore}");
 
-        // Ergebnis des Spiels
         if (dreamTeamScore > champsScore)
         {
             Console.WriteLine("Das Dream Team hat gewonnen!");

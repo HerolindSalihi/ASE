@@ -2,13 +2,15 @@
 
 class Program
 {
-    static string[] lines; 
-    static string[] headers;
+    static string[]? lines; 
+    static string[]? headers;
+
     static void Main(string[] args)
     {
         LoadData("C:/Users/Acer/OneDrive/Dokumente/ASE/Daten/nba_stats.csv");
-        string input = "";
-        while (input.ToLower() != "exit")
+        
+        string input;
+        do
         {
             Console.WriteLine("\nHauptmenü:");
             Console.WriteLine("1: Infos");
@@ -16,7 +18,7 @@ class Program
             Console.WriteLine("3: Simulations");
             Console.WriteLine("exit: Beenden");
             Console.Write("Wähle eine Option: ");
-            input = Console.ReadLine();
+            input = Console.ReadLine().ToLower();
 
             switch (input)
             {
@@ -36,14 +38,15 @@ class Program
                     Console.WriteLine("Ungültige Eingabe, bitte erneut versuchen.");
                     break;
             }
-        }
+        } while (input != "exit");
     }
+
     static void LoadData(string filePath)
     {
-        // Daten aus der Datei lesen
         lines = System.IO.File.ReadAllLines(filePath);
-        headers = lines[0].Split(','); // Die erste Zeile enthält die Spaltenüberschriften
+        headers = lines[0].Split(',');
     }
+
     static void ShowInfoMenu()
     {
         var matchupHistory = new MatchupHistory("C:/Users/Acer/OneDrive/Dokumente/ASE/Daten/spielplan.csv");
@@ -52,8 +55,9 @@ class Program
         var teamSearch = new TeamSearch(lines, headers);
         var topTenPlayersByStat = new TopTenPlayersByStat(lines, headers);
         var divisionStandings = new DivisionStandings("C:/Users/Acer/OneDrive/Dokumente/ASE/Daten/standings.csv");
-        string input = "";
-        while (input.ToLower() != "back")
+
+        string input;
+        do
         {
             Console.WriteLine("\nInfos-Menu:");
             Console.WriteLine("1: Matchup History");
@@ -64,7 +68,7 @@ class Program
             Console.WriteLine("6: Division Standings");
             Console.WriteLine("back: Zurück zum Hauptmenü");
             Console.Write("Wähle eine Option: ");
-            input = Console.ReadLine();
+            input = Console.ReadLine().ToLower();
 
             switch (input)
             {
@@ -75,10 +79,10 @@ class Program
                     playerSearch.SearchByPlayer();
                     break;
                 case "3":
-                    teamSchedule.DisplayTeamGames();
+                    teamSchedule.Start();
                     break;
                 case "4":
-                    teamSearch.SearchByTeam();
+                    teamSearch.Start();
                     break;
                 case "5":
                     topTenPlayersByStat.ShowTopTenPlayersByStat();
@@ -92,7 +96,7 @@ class Program
                     Console.WriteLine("Ungültige Eingabe, bitte erneut versuchen.");
                     break;
             }
-        }
+        } while (input != "back");
     }
 
     static void ShowGuessingGamesMenu()
@@ -112,8 +116,9 @@ class Program
         var mipGame = new MostImprovedPlayerGame("C:/Users/Acer/OneDrive/Dokumente/ASE/Daten/all_MIP.csv");
         var fmvpGame = new FinalsMVPGame("C:/Users/Acer/OneDrive/Dokumente/ASE/Daten/all_FMVP.csv");
         var amvpGame = new AllStarMVPGame("C:/Users/Acer/OneDrive/Dokumente/ASE/Daten/all_AMVP.csv");
-        string input = "";
-        while (input.ToLower() != "back")
+
+        string input;
+        do
         {
             Console.WriteLine("\nGuessing Games-Menu:");
             Console.WriteLine("1: All Star MVP Game");
@@ -133,54 +138,54 @@ class Program
             Console.WriteLine("15: Statistics Comparison Game");
             Console.WriteLine("back: Zurück zum Hauptmenü");
             Console.Write("Wähle eine Option: ");
-            input = Console.ReadLine();
+            input = Console.ReadLine().ToLower();
 
             switch (input)
             {
                 case "1":
-                    amvpGame.Play();
+                    amvpGame.Start();
                     break;
                 case "2":
-                    allTimePointsGame.Play();
+                    allTimePointsGame.Start();
                     break;
                 case "3":
-                    championshipsGame.Play();
+                    championshipsGame.Start();
                     break;
                 case "4":
-                    dpoyGame.Play();
+                    dpoyGame.Start();
                     break;
                 case "5":
-                    fmvpGame.Play();
+                    fmvpGame.Start();
                     break;
                 case "6":
-                    guessThePlayerGame.Play();
+                    guessThePlayerGame.Start();
                     break;
                 case "7":
-                    guessThePosition.Play();
+                    guessThePosition.Start();
                     break;
                 case "8":
-                    guessTheTeam.Play();
+                    guessTheTeam.Start();
                     break;
                 case "9":
-                    hallOfFameGame.Play();
+                    hallOfFameGame.Start();
                     break;
                 case "10":
-                    mipGame.Play();
+                    mipGame.Start();
                     break;
                 case "11":
-                    mvpGame.Play();
+                    mvpGame.Start();
                     break;
                 case "12":
-                    nbaDivisionsGame.Play();
+                    nbaDivisionsGame.Start();
                     break;
                 case "13":
-                    rookieGame.Play();
+                    rookieGame.Start();
                     break;
                 case "14":
-                    sixthManGame.Play();
+                    sixthManGame.Start();
                     break;
                 case "15":
-                    statisticsGame.Play();
+                    statisticsGame.Start();
                     break;
                 case "back":
                     break;
@@ -188,17 +193,18 @@ class Program
                     Console.WriteLine("Ungültige Eingabe, bitte erneut versuchen.");
                     break;
             }
-        }
+        } while (input != "back");
     }
 
-        static void ShowSimulationsMenu()
+    static void ShowSimulationsMenu()
     {
         var createDreamTeam = new CreateDreamTeam(lines, headers);
         var dreamTeamVsChamps = new DreamTeamVsChamps(lines, headers);
         var oneVsOneSimulator = new OneVsOneSimulator(lines, headers);
         var draftTeam = new DraftTeam(lines, headers);
-        string input = "";
-        while (input.ToLower() != "back")
+
+        string input;
+        do
         {
             Console.WriteLine("\nSimulations-Menu:");
             Console.WriteLine("1: Create Dream Team");
@@ -207,21 +213,21 @@ class Program
             Console.WriteLine("4: One vs One Simulator");
             Console.WriteLine("back: Zurück zum Hauptmenü");
             Console.Write("Wähle eine Option: ");
-            input = Console.ReadLine();
+            input = Console.ReadLine().ToLower();
 
             switch (input)
             {
                 case "1":
-                    createDreamTeam.FormDreamTeam();
+                    createDreamTeam.Start();
                     break;
                 case "2":
-                    draftTeam.StartDraft();
+                    draftTeam.Start();
                     break;
                 case "3":
-                    dreamTeamVsChamps.PlayAgainstChamps();
+                    dreamTeamVsChamps.Start();
                     break;
                 case "4":
-                    oneVsOneSimulator.SimulateOneVsOne();
+                    oneVsOneSimulator.Start();
                     break;
                 case "back":
                     break;
@@ -229,7 +235,6 @@ class Program
                     Console.WriteLine("Ungültige Eingabe, bitte erneut versuchen.");
                     break;
             }
-        }
+        } while (input != "back");
     }
 }
-

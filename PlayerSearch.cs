@@ -12,7 +12,7 @@ public class PlayerSearch
     public void SearchByPlayer()
     {
         Console.Write("Gib den Namen des Spielers ein: ");
-        string playerName = Console.ReadLine();
+        string? playerName = Console.ReadLine();
         var playerData = lines.Skip(1).Select(line => line.Split(',')).FirstOrDefault(columns => columns[1].Equals(playerName, StringComparison.OrdinalIgnoreCase));
         if (playerData == null)
         {

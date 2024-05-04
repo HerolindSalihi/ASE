@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
-public class DraftTeam
+public class DraftTeam : IGame
 {
     private List<string[]> availablePlayers;
     private List<string[]> chosenPlayers;
@@ -16,7 +17,7 @@ public class DraftTeam
         chosenPlayers = new List<string[]>();
     }
 
-    public void StartDraft()
+    public void Start() // Implementierung der IGame-Start-Methode
     {
         Console.WriteLine("Willkommen zum Spieler-Draft! Wähle 10 Spieler für dein Team.");
         for (int season = 1; season <= 10; season++)
@@ -53,10 +54,13 @@ public class DraftTeam
         }
 
         int choice = GetUserChoice(roundPlayers.Count);
-        chosenPlayers.Add(roundPlayers[choice - 1]);
-        availablePlayers.Remove(roundPlayers[choice - 1]);
-
-        Console.WriteLine($"{roundPlayers[choice - 1][1]} wurde zu deinem Team hinzugefügt.");
+        if (choice > 0 && choice <= roundPlayers.Count) {
+            chosenPlayers.Add(roundPlayers[choice - 1]);
+            availablePlayers.Remove(roundPlayers[choice - 1]);
+            Console.WriteLine($"{roundPlayers[choice - 1][1]} wurde zu deinem Team hinzugefügt.");
+        } else {
+            Console.WriteLine("Ungültige Eingabe, bitte versuche es erneut.");
+        }
     }
 
     private void SimulateSeason()
@@ -87,12 +91,18 @@ public class DraftTeam
         }
 
         int choice = GetUserChoice(roundPlayers.Count + 1);
-        if (choice != 0)
+        if (choice > 0 && choice <= roundPlayers.Count)
         {
             chosenPlayers.Add(roundPlayers[choice - 1]);
             availablePlayers.Remove(roundPlayers[choice - 1]);
             Console.WriteLine($"Du hast {roundPlayers[choice - 1][1]} ausgewählt. Bitte wähle einen Spieler zum Entfernen.");
             RemovePlayer();
+        }
+        else if (choice == 0) {
+            Console.WriteLine("Keinen Spieler ausgewählt.");
+        }
+        else {
+            Console.WriteLine("Ungültige Eingabe, bitte versuche es erneut.");
         }
     }
 
@@ -105,8 +115,12 @@ public class DraftTeam
         }
 
         int playerToRemove = GetUserChoice(chosenPlayers.Count);
-        Console.WriteLine($"{chosenPlayers[playerToRemove - 1][1]} wurde aus deinem Team entfernt.");
-        chosenPlayers.RemoveAt(playerToRemove - 1);
+        if (playerToRemove > 0 && playerToRemove <= chosenPlayers.Count) {
+            Console.WriteLine($"{chosenPlayers[playerToRemove - 1][1]} wurde aus deinem Team entfernt.");
+            chosenPlayers.RemoveAt(playerToRemove - 1);
+        } else {
+            Console.WriteLine("Ungültige Eingabe, bitte versuche es erneut.");
+        }
     }
 
     private List<string[]> GetRandomPlayers(int count)

@@ -10,6 +10,7 @@ public class SixthManOfTheYearGame
 
     public SixthManOfTheYearGame(string filePath)
     {
+        smotyBySeason = new Dictionary<string, string>();
         LoadData(filePath);
     }
 
@@ -21,7 +22,7 @@ public class SixthManOfTheYearGame
                             .ToDictionary(fields => fields[0].Trim(), fields => fields[1].Trim());  // Angenommen, dass die erste Spalte die Saison und die zweite den SMOTY enthält
     }
 
-    public void Play()
+    public void Start()
     {
         Console.WriteLine("Willkommen zum Sixth Man of the Year-Ratespiel!");
         Console.WriteLine("Versuche, alle Gewinner des Sixth Man of the Year zu erraten. Gib den Namen eines Spielers ein.");
@@ -30,7 +31,7 @@ public class SixthManOfTheYearGame
         {
             DisplaySMOTYs();
 
-            string guess = Console.ReadLine().Trim();
+            string? guess = Console.ReadLine()?.Trim();
             if (string.IsNullOrEmpty(guess))
             {
                 Console.WriteLine("Ungültige Eingabe, bitte versuche es erneut.");

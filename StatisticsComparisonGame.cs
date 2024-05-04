@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-public class StatisticsComparisonGame
+public class StatisticsComparisonGame : IGame
 {
     private List<string[]> players;
     private string[] headers;
@@ -14,7 +14,7 @@ public class StatisticsComparisonGame
         players = lines.Skip(1).Select(line => line.Split(',')).ToList();
     }
 
-    public void Play()
+    public void Start()
     {
         Console.WriteLine("Willkommen zum Statistiken-Vergleichsspiel!");
         int score = 0;
@@ -27,12 +27,24 @@ public class StatisticsComparisonGame
             string category = categories[random.Next(categories.Length)];
             int categoryIndex = Array.IndexOf(headers, category);
 
-            Console.WriteLine($"\nRunde {i+1}: Wer hat mehr {category}?");
+            Console.WriteLine($"\nRunde {i + 1}: Wer hat mehr {category}?");
             Console.WriteLine($"1: {playerOne[1]} ({playerOne[categoryIndex]})");
             Console.WriteLine($"2: {playerTwo[1]} ({playerTwo[categoryIndex]})");
             Console.Write("Wähle Spieler 1 oder 2: ");
-            string input = Console.ReadLine();
-            int userChoice = int.Parse(input.Trim());
+
+            int userChoice;
+            while (true)
+            {
+                string? input = Console.ReadLine();
+                if (int.TryParse(input, out userChoice) && (userChoice == 1 || userChoice == 2))
+                {
+                    break;
+                }
+                else
+                {
+                    Console.WriteLine("Ungültige Eingabe. Bitte wähle 1 oder 2.");
+                }
+            }
 
             int playerOneStat = int.Parse(playerOne[categoryIndex]);
             int playerTwoStat = int.Parse(playerTwo[categoryIndex]);
@@ -53,3 +65,4 @@ public class StatisticsComparisonGame
         Console.WriteLine($"\nSpiel beendet. Deine Punktzahl: {score}/20");
     }
 }
+

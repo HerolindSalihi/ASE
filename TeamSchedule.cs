@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-public class TeamSchedule
+public class TeamSchedule : IGame
 {
     private List<string[]> games;
     private string[] headers;
 
     public TeamSchedule(string filePath)
     {
+        games = new List<string[]>();
+        headers = Array.Empty<string>();
         LoadData(filePath);
     }
 
@@ -20,10 +22,17 @@ public class TeamSchedule
         games = lines.Skip(1).Select(line => line.Split(',')).ToList();
     }
 
-    public void DisplayTeamGames()
+    public void Start()
+    {
+        Console.WriteLine("Willkommen zur Anzeige des Spielplans eines NBA-Teams!");
+        DisplayTeamGames();
+    }
+
+    private void DisplayTeamGames()
     {
         Console.WriteLine("Gib den Namen des NBA-Teams ein:");
-        string teamName = Console.ReadLine().Trim();
+        string? input = Console.ReadLine();
+        string teamName = input?.Trim() ?? string.Empty;
 
         var teamGames = games.Where(game => game[1].Equals(teamName, StringComparison.OrdinalIgnoreCase) || game[2].Equals(teamName, StringComparison.OrdinalIgnoreCase)).ToList();
 

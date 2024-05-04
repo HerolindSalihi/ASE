@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Acer\\OneDrive\\Dokumente\\ASE\\ASE.csproj": {}
+    "C:\\Users\\Acer\\OneDrive\\Dokumente\\GitHub\\ASE\\ASE.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Acer\\OneDrive\\Dokumente\\ASE\\ASE.csproj": {
+    "C:\\Users\\Acer\\OneDrive\\Dokumente\\GitHub\\ASE\\ASE.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Acer\\OneDrive\\Dokumente\\ASE\\ASE.csproj",
+        "projectUniqueName": "C:\\Users\\Acer\\OneDrive\\Dokumente\\GitHub\\ASE\\ASE.csproj",
         "projectName": "ASE",
-        "projectPath": "C:\\Users\\Acer\\OneDrive\\Dokumente\\ASE\\ASE.csproj",
+        "projectPath": "C:\\Users\\Acer\\OneDrive\\Dokumente\\GitHub\\ASE\\ASE.csproj",
         "packagesPath": "C:\\Users\\Acer\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Acer\\OneDrive\\Dokumente\\ASE\\obj\\",
+        "outputPath": "C:\\Users\\Acer\\OneDrive\\Dokumente\\GitHub\\ASE\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

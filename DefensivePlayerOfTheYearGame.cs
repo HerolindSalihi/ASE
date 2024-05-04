@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-public class DefensivePlayerOfTheYearGame
+public class DefensivePlayerOfTheYearGame : IGame  // Implementierung des IGame Interfaces
 {
     private Dictionary<string, string>? dpoyBySeason; // Feld als nullable deklarieren
     private HashSet<string> guessedDPOYs = new HashSet<string>();
@@ -15,17 +15,24 @@ public class DefensivePlayerOfTheYearGame
 
     private void LoadData(string filePath)
     {
+        if (!File.Exists(filePath))
+        {
+            Console.WriteLine($"Die Datei '{filePath}' wurde nicht gefunden.");
+            dpoyBySeason = new Dictionary<string, string>(); // Sicherstellen, dass die Variable initialisiert ist
+            return;
+        }
+
         string[] lines = File.ReadAllLines(filePath);
         dpoyBySeason = lines.Skip(1)  
                             .Select(line => line.Split(','))
                             .ToDictionary(fields => fields[0].Trim(), fields => fields[1].Trim());  
     }
 
-    public void Play()
+    public void Start() // Ersetzt die Play Methode und implementiert die IGame.Start Methode
     {
-        if (dpoyBySeason == null)
+        if (dpoyBySeason == null || dpoyBySeason.Count == 0)
         {
-            Console.WriteLine("Fehler beim Laden der Daten für das Defensive Player of the Year-Ratespiel.");
+            Console.WriteLine("Fehler beim Laden der Daten für das Defensive Player of the Year-Ratespiel oder keine Daten vorhanden.");
             return;
         }
 
@@ -36,7 +43,7 @@ public class DefensivePlayerOfTheYearGame
         {
             DisplayDPOYs();
 
-            string guess = Console.ReadLine().Trim();
+            string? guess = Console.ReadLine()?.Trim();
             if (string.IsNullOrEmpty(guess))
             {
                 Console.WriteLine("Ungültige Eingabe, bitte versuche es erneut.");
@@ -83,4 +90,3 @@ public class DefensivePlayerOfTheYearGame
         }
     }
 }
-

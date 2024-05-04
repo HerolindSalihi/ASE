@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-public class HallOfFameGame
+public class HallOfFameGame : IGame
 {
     private List<string[]> playersData;
     private HashSet<string> guessedPlayers = new HashSet<string>();
 
     public HallOfFameGame(string filePath)
     {
+        playersData = new List<string[]>();
         LoadData(filePath);
     }
 
@@ -23,29 +24,36 @@ public class HallOfFameGame
                             .ToList();
     }
 
-    public void Play()
+    public void Start()
     {
-        Console.WriteLine("Willkommen zum Hall of Fame Erratespiel!");
-        Console.WriteLine("Versuche, die Top 25 Spieler mit der höchsten Wahrscheinlichkeit für die Hall of Fame zu erraten.");
-
-        while (guessedPlayers.Count < 25)
+        try
         {
-            Console.WriteLine("\nGib den Namen eines Spielers ein:");
-            string playerName = Console.ReadLine().Trim();
+            Console.WriteLine("Willkommen zum Hall of Fame Erratespiel!");
+            Console.WriteLine("Versuche, die Top 25 Spieler mit der höchsten Wahrscheinlichkeit für die Hall of Fame zu erraten.");
 
-            if (playersData.Any(p => p[1].Equals(playerName, StringComparison.OrdinalIgnoreCase) && guessedPlayers.Add(playerName)))
+            while (guessedPlayers.Count < 25)
             {
-                Console.WriteLine("Richtig! " + playerName + " ist einer der Top 25 Kandidaten.");
-            }
-            else
-            {
-                Console.WriteLine("Entweder falsch oder bereits erraten.");
+                Console.WriteLine("\nGib den Namen eines Spielers ein:");
+                string? playerName = Console.ReadLine()?.Trim();
+
+                if (playerName != null && playersData.Any(p => p[1].Equals(playerName, StringComparison.OrdinalIgnoreCase) && guessedPlayers.Add(playerName)))
+                {
+                    Console.WriteLine("Richtig! " + playerName + " ist einer der Top 25 Kandidaten.");
+                }
+                else
+                {
+                    Console.WriteLine("Entweder falsch oder bereits erraten.");
+                }
+
+                DisplayGuessedPlayers();
             }
 
-            DisplayGuessedPlayers();
+            Console.WriteLine("\nGlückwunsch! Du hast alle Top 25 Spieler erraten.");
         }
-
-        Console.WriteLine("\nGlückwunsch! Du hast alle Top 25 Spieler erraten.");
+        catch (Exception ex)
+        {
+            ErrorHandler.HandleError("Ein Fehler ist aufgetreten", ex);
+        }
     }
 
     private void DisplayGuessedPlayers()

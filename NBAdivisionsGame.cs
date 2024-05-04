@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-public class NBAdivisionsGame
+public class NBAdivisionsGame : IGame
 {
     private Dictionary<string, List<string>> divisions;
 
     public NBAdivisionsGame(string filePath)
     {
+        divisions = new Dictionary<string, List<string>>();
         LoadData(filePath);
     }
 
@@ -21,7 +22,8 @@ public class NBAdivisionsGame
                          .ToDictionary(group => group.Key, group => group.ToList());
     }
 
-    public void Play()
+
+    public void Start()
     {
         Console.WriteLine("Willkommen zum NBA Divisionen-Spiel!");
 
@@ -33,13 +35,13 @@ public class NBAdivisionsGame
             while (guessedTeams.Count < division.Value.Count)
             {
                 Console.WriteLine("Nenne ein Team:");
-                string teamName = Console.ReadLine().Trim();
+                string? teamName = Console.ReadLine()?.Trim();
 
-                if (teamName.Equals("Gebe auf", StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(teamName, "Gebe auf", StringComparison.OrdinalIgnoreCase))
                 {
                     break;
                 }
-                else if (division.Value.Contains(teamName, StringComparer.OrdinalIgnoreCase) && !guessedTeams.Contains(teamName))
+                else if (!string.IsNullOrEmpty(teamName) && division.Value.Contains(teamName, StringComparer.OrdinalIgnoreCase) && !guessedTeams.Contains(teamName))
                 {
                     guessedTeams.Add(teamName);
                     Console.WriteLine("Richtig!");

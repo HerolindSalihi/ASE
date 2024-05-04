@@ -3,32 +3,60 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-public class ChampionshipsGame
+public class ChampionshipsGame : IGame  // Implementiere das IGame Interface
 {
     private List<string[]>? playersData; // Feld als nullable deklarieren
     private HashSet<string> guessedPlayers = new HashSet<string>();
 
     public ChampionshipsGame(string filePath)
     {
-        playersData = new List<string[]>(); // Initialisierung des Feldes im Konstruktor
-        LoadData(filePath);
+        playersData = new List<string[]>();
+        try
+        {
+            LoadData(filePath);
+        }
+        catch (Exception ex)
+        {
+            ErrorHandler.HandleError("Ein Fehler ist aufgetreten beim Laden der Championships Daten", ex);
+            // Entscheidung, ob das Programm beendet wird, oder nicht
+            throw;  // Fehler weiter nach oben werfen, falls notwendig
+        }
     }
 
     private void LoadData(string filePath)
     {
+        if (!File.Exists(filePath))
+        {
+            throw new FileNotFoundException($"Die Datei '{filePath}' wurde nicht gefunden.");
+        }
+        
         string[] lines = File.ReadAllLines(filePath);
-        playersData = lines.Skip(1)
-                            .Select(line => line.Split(','))
-                            .OrderByDescending(fields => int.Parse(fields[2]))
-                            .Take(20)
-                            .ToList();
+        try
+        {
+            playersData = lines.Skip(1)
+                                .Select(line => line.Split(','))
+                                .Where(fields => fields.Length >= 3 && int.TryParse(fields[2], out _))
+                                .OrderByDescending(fields => int.Parse(fields[2]))
+                                .Take(20)
+                                .ToList();
+        }
+        catch (FormatException fe)
+        {
+            ErrorHandler.HandleError("Formatfehler bei der Verarbeitung der Daten", fe);
+            throw;  // Werfen, damit weiter oben behandelt werden kann
+        }
+        catch (Exception ex)
+        {
+            ErrorHandler.HandleError("Allgemeiner Fehler beim Verarbeiten der Daten", ex);
+            throw;  // Werfen, damit weiter oben behandelt werden kann
+        }
     }
 
-    public void Play()
+    public void Start() // Ersetzt die "Play" Methode durch "Start"
     {
-        if (playersData == null)
+        if (playersData == null || !playersData.Any())
         {
-            Console.WriteLine("Fehler beim Laden der Daten für das Championships Erratespiel.");
+            Console.WriteLine("Keine Daten verfügbar zum Start des Spiels.");
             return;
         }
 
@@ -74,4 +102,3 @@ public class ChampionshipsGame
         }
     }
 }
-

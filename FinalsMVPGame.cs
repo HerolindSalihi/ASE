@@ -3,25 +3,33 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-public class FinalsMVPGame
+public class FinalsMVPGame : IGame
 {
     private Dictionary<string, string> fmvpBySeason;
     private HashSet<string> guessedFMVPs = new HashSet<string>();
 
     public FinalsMVPGame(string filePath)
     {
+        fmvpBySeason = new Dictionary<string, string>();
         LoadData(filePath);
     }
 
     private void LoadData(string filePath)
     {
+        if (!File.Exists(filePath))
+        {
+            Console.WriteLine($"Die Datei '{filePath}' wurde nicht gefunden.");
+            fmvpBySeason = new Dictionary<string, string>(); // Initialisiere leer, um NullReferenceExceptions zu vermeiden
+            return;
+        }
+
         string[] lines = File.ReadAllLines(filePath);
         fmvpBySeason = lines.Skip(1)
                             .Select(line => line.Split(','))
                             .ToDictionary(fields => fields[0].Trim(), fields => fields[1].Trim());
     }
 
-    public void Play()
+    public void Start()
     {
         Console.WriteLine("Willkommen zum Finals MVP Ratespiel!");
         Console.WriteLine("Versuche, alle Gewinner des Finals MVP zu erraten. Gib den Namen eines Spielers ein.");
@@ -30,7 +38,7 @@ public class FinalsMVPGame
         {
             DisplayAwards();
 
-            string guess = Console.ReadLine().Trim();
+            string? guess = Console.ReadLine()?.Trim();
             if (string.IsNullOrEmpty(guess))
             {
                 Console.WriteLine("Ungültige Eingabe, bitte versuche es erneut.");

@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-public class MVPGame
+public class MVPGame : IGame
 {
     private Dictionary<string, string> mvpBySeason;
     private HashSet<string> guessedMVPs = new HashSet<string>();
 
     public MVPGame(string filePath)
     {
+        mvpBySeason = new Dictionary<string, string>();
         LoadData(filePath);
     }
 
@@ -21,39 +22,46 @@ public class MVPGame
                             .ToDictionary(fields => fields[0].Trim(), fields => fields[1].Trim());  // Angenommen, dass die erste Spalte die Saison und die zweite den MVP enthält
     }
 
-    public void Play()
+    public void Start()
     {
-        Console.WriteLine("Willkommen zum MVP-Ratespiel!");
-        Console.WriteLine("Versuche, die MVPs der letzten 40 Saisons zu erraten. Gib den Namen eines Spielers ein.");
-
-        while (guessedMVPs.Count < mvpBySeason.Values.Distinct().Count())
+        try
         {
-            DisplayMVPs();
+            Console.WriteLine("Willkommen zum MVP-Ratespiel!");
+            Console.WriteLine("Versuche, die MVPs der letzten 40 Saisons zu erraten. Gib den Namen eines Spielers ein.");
 
-            string guess = Console.ReadLine().Trim();
-            if (string.IsNullOrEmpty(guess))
+            while (guessedMVPs.Count < mvpBySeason.Values.Distinct().Count())
             {
-                Console.WriteLine("Ungültige Eingabe, bitte versuche es erneut.");
-                continue;
-            }
+                DisplayMVPs();
 
-            var matchedSeasons = mvpBySeason.Where(kvp => kvp.Value.Equals(guess, StringComparison.OrdinalIgnoreCase)).ToList();
-            if (matchedSeasons.Count > 0 && !guessedMVPs.Contains(guess))
-            {
-                guessedMVPs.Add(guess);
-                Console.WriteLine($"Richtig! {guess} war MVP in den folgenden Saisons:");
-                foreach (var season in matchedSeasons)
+                string? guess = Console.ReadLine()?.Trim();
+                if (string.IsNullOrEmpty(guess))
                 {
-                    Console.WriteLine($"- {season.Key}");
+                    Console.WriteLine("Ungültige Eingabe, bitte versuche es erneut.");
+                    continue;
+                }
+
+                var matchedSeasons = mvpBySeason.Where(kvp => kvp.Value.Equals(guess, StringComparison.OrdinalIgnoreCase)).ToList();
+                if (matchedSeasons.Count > 0 && !guessedMVPs.Contains(guess))
+                {
+                    guessedMVPs.Add(guess);
+                    Console.WriteLine($"Richtig! {guess} war MVP in den folgenden Saisons:");
+                    foreach (var season in matchedSeasons)
+                    {
+                        Console.WriteLine($"- {season.Key}");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Falsch oder bereits erraten, versuche es erneut.");
                 }
             }
-            else
-            {
-                Console.WriteLine("Falsch oder bereits erraten, versuche es erneut.");
-            }
-        }
 
-        Console.WriteLine("\nGlückwunsch! Du hast alle MVPs erraten.");
+            Console.WriteLine("\nGlückwunsch! Du hast alle MVPs erraten.");
+        }
+        catch (Exception ex)
+        {
+            ErrorHandler.HandleError("Ein Fehler ist aufgetreten", ex);
+        }
     }
 
     private void DisplayMVPs()

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-public class AllTimePointsGame
+public class AllTimePointsGame : IGame  // Implementiere das IGame Interface
 {
     private List<string[]> playersData = new List<string[]>();
     private HashSet<string> guessedPlayers = new HashSet<string>();
@@ -22,24 +22,32 @@ public class AllTimePointsGame
 
     private void LoadData(string filePath)
     {
-        string[] lines = File.ReadAllLines(filePath);
-        foreach (var line in lines.Skip(1))  // Header überspringen
+        try
         {
-            string[] fields = line.Split(',');
-            if (fields.Length >= 3 && int.TryParse(fields[2], out _))  // Mindestens drei Felder und das dritte Feld sind die Punkte
+            string[] lines = File.ReadAllLines(filePath);
+            foreach (var line in lines.Skip(1))  // Header überspringen
             {
-                playersData.Add(fields);
+                string[] fields = line.Split(',');
+                if (fields.Length >= 3 && int.TryParse(fields[2], out _))  // Mindestens drei Felder und das dritte Feld sind die Punkte
+                {
+                    playersData.Add(fields);
+                }
+                else
+                {
+                    Console.WriteLine($"Ungültige Datensatzformatierung: {line}");
+                }
             }
-            else
-            {
-                Console.WriteLine($"Ungültige Datensatzformatierung: {line}");
-            }
-        }
 
-        playersData = playersData.OrderByDescending(fields => int.Parse(fields[2])).Take(30).ToList();  // Punkte absteigend sortieren, Top 30 Spieler
+            playersData = playersData.OrderByDescending(fields => int.Parse(fields[2])).Take(30).ToList();  // Punkte absteigend sortieren, Top 30 Spieler
+        }
+        catch (Exception ex)
+        {
+            ErrorHandler.HandleError("Fehler beim Laden der Spielerdaten", ex);
+            throw; // Hier könntest du entscheiden, ob du die Ausnahme weiterwerfen willst oder nicht.
+        }
     }
 
-    public void Play()
+    public void Start() // Ersetzt die "Play" Methode durch "Start"
     {
         Console.WriteLine("Willkommen zum All-Time Points Erratespiel!");
         Console.WriteLine("Versuche, die Top 30 Spieler mit den meisten Punkten in der Geschichte der NBA zu erraten.");
@@ -47,7 +55,7 @@ public class AllTimePointsGame
         while (guessedPlayers.Count < 30 && playersData.Any())
         {
             Console.WriteLine("\nGib den Namen eines Spielers ein:");
-            string playerName = Console.ReadLine()?.Trim();
+            string? playerName = Console.ReadLine()?.Trim();
 
             if (!string.IsNullOrWhiteSpace(playerName))
             {
@@ -70,9 +78,13 @@ public class AllTimePointsGame
     private void DisplayGuessedPlayers()
     {
         Console.WriteLine("\nBisher erratene Spieler:");
-        foreach (var player in playersData.Where(p => guessedPlayers.Contains(p.ElementAtOrDefault(1))))
+        foreach (var player in playersData)
         {
-            Console.WriteLine(player.ElementAtOrDefault(1));
+            string? playerName = player.ElementAtOrDefault(1);
+            if (playerName != null && guessedPlayers.Contains(playerName))
+            {
+                Console.WriteLine(playerName);
+            }
         }
     }
 }

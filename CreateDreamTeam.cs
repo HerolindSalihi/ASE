@@ -1,4 +1,9 @@
-public class CreateDreamTeam
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+
+public class CreateDreamTeam : IGame  // Implementierung des IGame Interfaces
 {
     private string[] lines;
     private Safe<string[]> headers;
@@ -9,13 +14,14 @@ public class CreateDreamTeam
         this.headers = headers;
     }
 
-    public void FormDreamTeam()
+    public void Start() // Ersetzt FormDreamTeam und implementiert IGame.Start
     {
         List<string> selectedPlayers = new List<string>();
+        Console.WriteLine("Willkommen zur Erstellung deines Dream Teams! Bitte wähle 5 Spieler.");
         for (int i = 0; i < 5; i++)
         {
             Console.Write($"Gib den Namen des Spielers {i + 1} ein: ");
-            string? playerName = Console.ReadLine(); // playerName als nullable deklarieren
+            string? playerName = Console.ReadLine();
             if (string.IsNullOrEmpty(playerName))
             {
                 Console.WriteLine("Ungültige Eingabe. Bitte gib den Namen erneut ein.");
@@ -40,5 +46,6 @@ public class CreateDreamTeam
                 Console.WriteLine($"{playerName} wurde zum Dream Team hinzugefügt.");
             }
         }
+        Console.WriteLine("Dein Dream Team wurde erfolgreich erstellt!");
     }
 }

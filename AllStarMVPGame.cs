@@ -3,38 +3,40 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-public class AllStarMVPGame
+public class AllStarMVPGame : IGame
 {
-    private Dictionary<string, string> amvpBySeason = new Dictionary<string, string>(); // Feld initialisieren
-    private HashSet<string> guessedAMVPs = new HashSet<string>();
+    private Dictionary<string, string> amvpBySeason = new Dictionary<string, string>();
 
     public AllStarMVPGame(string filePath)
     {
-        try
-        {
-            LoadData(filePath);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Es gab einen Fehler beim Laden der Daten: {ex.Message}");
-            Environment.Exit(1); // Beendet die Ausführung des Programms, wenn ein Fehler auftritt.
-        }
+        LoadData(filePath);
     }
 
     private void LoadData(string filePath)
     {
-        if (!File.Exists(filePath))
+        try
         {
-            throw new FileNotFoundException($"Die Datei '{filePath}' wurde nicht gefunden.");
+            if (!File.Exists(filePath))
+            {
+                throw new FileNotFoundException($"Die Datei '{filePath}' wurde nicht gefunden.");
+            }
+
+            string[] lines = File.ReadAllLines(filePath);
+            amvpBySeason = lines.Skip(1)
+                                .Select(line => line.Split(','))
+                                .Where(parts => parts.Length >= 2)
+                                .ToDictionary(fields => fields[0].Trim(), fields => fields[1].Trim());
         }
-        string[] lines = File.ReadAllLines(filePath);
-        amvpBySeason = lines.Skip(1)
-                            .Select(line => line.Split(','))
-                            .Where(parts => parts.Length >= 2)
-                            .ToDictionary(fields => fields[0].Trim(), fields => fields[1].Trim());
+        catch (Exception ex)
+        {
+            ErrorHandler.HandleError("Fehler beim Laden der All-Star MVP-Daten", ex);
+
+            // Hier kannst du entscheiden, ob das Programm beendet werden soll oder nicht
+            Environment.Exit(1);  // Beendet das Programm, wenn kritischer Fehler auftritt
+        }
     }
 
-    public void Play()
+    public void Start()
     {
         if (amvpBySeason.Count == 0)
         {
@@ -49,7 +51,13 @@ public class AllStarMVPGame
         {
             DisplayAwards();
 
-            string guess = Console.ReadLine().Trim();
+            string? input = Console.ReadLine();
+            if (input == null)
+            {
+                Console.WriteLine("Keine Eingabe erkannt. Bitte erneut versuchen.");
+                continue;
+            }
+            string guess = input.Trim();
             if (string.IsNullOrEmpty(guess))
             {
                 Console.WriteLine("Ungültige Eingabe, bitte versuche es erneut.");
@@ -79,18 +87,17 @@ public class AllStarMVPGame
     {
         foreach (var season in amvpBySeason)
         {
-            if (season.Value != null && guessedAMVPs != null) // Überprüfen, ob die Werte nicht null sind
+            if (guessedAMVPs.Contains(season.Value))
             {
-                if (guessedAMVPs.Contains(season.Value))
-                {
-                    Console.WriteLine($"{season.Key}: {season.Value}");
-                }
-                else
-                {
-                    Console.WriteLine($"{season.Key}: ?");
-                }
+                Console.WriteLine($"{season.Key}: {season.Value}");
+            }
+            else
+            {
+                Console.WriteLine($"{season.Key}: ?");
             }
         }
     }
+
+    private HashSet<string> guessedAMVPs = new HashSet<string>(); // Feld initialisieren
 }
     

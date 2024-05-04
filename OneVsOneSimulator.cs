@@ -8,15 +8,26 @@ public class OneVsOneSimulator
         this.lines = lines;
         this.headers = headers;
     }
+    public void Start()
+    {
+        try
+        {
+            SimulateOneVsOne();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Ein Fehler ist aufgetreten: {ex.Message}");
+        }
+    }
 
     public void SimulateOneVsOne()
     {
         Console.Write("Gib den Namen des ersten Spielers ein: ");
-        string firstPlayerName = Console.ReadLine();
+        string? firstPlayerName = Console.ReadLine();
         var firstPlayerData = lines.Skip(1).Select(line => line.Split(',')).FirstOrDefault(columns => columns[1].Equals(firstPlayerName, StringComparison.OrdinalIgnoreCase));
 
         Console.Write("Gib den Namen des zweiten Spielers ein: ");
-        string secondPlayerName = Console.ReadLine();
+        string? secondPlayerName = Console.ReadLine();
         var secondPlayerData = lines.Skip(1).Select(line => line.Split(',')).FirstOrDefault(columns => columns[1].Equals(secondPlayerName, StringComparison.OrdinalIgnoreCase));
 
         if (firstPlayerData == null || secondPlayerData == null)
@@ -34,6 +45,13 @@ public class OneVsOneSimulator
         foreach (var stat in stats)
         {
             int index = Array.IndexOf(headers, stat);
+            
+            if (index < 0 || index >= firstPlayerData.Length || index >= secondPlayerData.Length)
+            {
+                Console.WriteLine($"Statistik '{stat}' nicht gefunden für einen der Spieler.");
+                continue;
+            }
+
             decimal firstPlayerStat = Convert.ToDecimal(firstPlayerData[index]);
             decimal secondPlayerStat = Convert.ToDecimal(secondPlayerData[index]);
 
@@ -56,4 +74,5 @@ public class OneVsOneSimulator
         else
             Console.WriteLine("Es ist ein Unentschieden!");
     }
+
 }

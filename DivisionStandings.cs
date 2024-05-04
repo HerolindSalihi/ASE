@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-public class DivisionStandings
+public class DivisionStandings : IGame
 {
-    private List<string[]> easternStandings = new List<string[]>(); // Feld initialisieren
-    private List<string[]> westernStandings = new List<string[]>(); // Feld initialisieren
-    private string[] headers = Array.Empty<string>(); // Feld initialisieren
+    private List<string[]> easternStandings = new List<string[]>();
+    private List<string[]> westernStandings = new List<string[]>();
+    private string[] headers = Array.Empty<string>();
 
     public DivisionStandings(string filePath)
     {
@@ -16,10 +16,16 @@ public class DivisionStandings
 
     private void LoadData(string filePath)
     {
-        string[] lines = File.ReadAllLines(filePath);
-        if (lines.Length > 0) // Überprüfen, ob lines nicht leer ist
+        if (!File.Exists(filePath))
         {
-            headers = lines[0].Split(',');  // Annahme, dass die erste Zeile die Kopfzeilen enthält
+            Console.WriteLine($"Die Datei '{filePath}' wurde nicht gefunden.");
+            return;
+        }
+
+        string[] lines = File.ReadAllLines(filePath);
+        if (lines.Length > 0)
+        {
+            headers = lines[0].Split(',');
             var data = lines.Skip(1).Select(line => line.Split(','));
 
             easternStandings = data.Where(line => line.Length > 2 && line[2].Trim().ToLower() == "e").ToList();
@@ -29,6 +35,11 @@ public class DivisionStandings
         {
             Console.WriteLine("Die Datei enthält keine Daten.");
         }
+    }
+
+    public void Start()
+    {
+        DisplayStandings();
     }
 
     public void DisplayStandings()
@@ -41,7 +52,7 @@ public class DivisionStandings
 
         Console.WriteLine("Wähle eine Division: 'E' für Eastern oder 'W' für Western");
         string? choice = Console.ReadLine();
-        if (choice != null)
+        if (!string.IsNullOrEmpty(choice))
         {
             choice = choice.Trim().ToUpper();
 
@@ -64,9 +75,9 @@ public class DivisionStandings
 
     private void DisplayTable(List<string[]> standings)
     {
-        if (headers.Length == 0)
+        if (standings.Count == 0)
         {
-            Console.WriteLine("Es wurden keine Daten geladen.");
+            Console.WriteLine("Keine Daten verfügbar für diese Division.");
             return;
         }
 

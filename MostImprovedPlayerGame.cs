@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-public class MostImprovedPlayerGame
+public class MostImprovedPlayerGame : IGame
 {
     private Dictionary<string, string> mipBySeason;
     private HashSet<string> guessedMIPs = new HashSet<string>();
 
     public MostImprovedPlayerGame(string filePath)
     {
+        mipBySeason = new Dictionary<string, string>();
         LoadData(filePath);
     }
 
@@ -21,39 +22,46 @@ public class MostImprovedPlayerGame
                            .ToDictionary(fields => fields[0].Trim(), fields => fields[1].Trim());
     }
 
-    public void Play()
+    public void Start()
     {
-        Console.WriteLine("Willkommen zum Most Improved Player Ratespiel!");
-        Console.WriteLine("Versuche, alle Gewinner des Most Improved Player zu erraten. Gib den Namen eines Spielers ein.");
-
-        while (guessedMIPs.Count < mipBySeason.Values.Distinct().Count())
+        try
         {
-            DisplayAwards();
+            Console.WriteLine("Willkommen zum Most Improved Player Ratespiel!");
+            Console.WriteLine("Versuche, alle Gewinner des Most Improved Player zu erraten. Gib den Namen eines Spielers ein.");
 
-            string guess = Console.ReadLine().Trim();
-            if (string.IsNullOrEmpty(guess))
+            while (guessedMIPs.Count < mipBySeason.Values.Distinct().Count())
             {
-                Console.WriteLine("Ungültige Eingabe, bitte versuche es erneut.");
-                continue;
-            }
+                DisplayAwards();
 
-            var matchedSeasons = mipBySeason.Where(kvp => kvp.Value.Equals(guess, StringComparison.OrdinalIgnoreCase)).ToList();
-            if (matchedSeasons.Count > 0 && !guessedMIPs.Contains(guess))
-            {
-                guessedMIPs.Add(guess);
-                Console.WriteLine($"Richtig! {guess} war Most Improved Player in den folgenden Saisons:");
-                foreach (var season in matchedSeasons)
+                string? guess = Console.ReadLine()?.Trim();
+                if (string.IsNullOrEmpty(guess))
                 {
-                    Console.WriteLine($"- {season.Key}");
+                    Console.WriteLine("Ungültige Eingabe, bitte versuche es erneut.");
+                    continue;
+                }
+
+                var matchedSeasons = mipBySeason.Where(kvp => kvp.Value.Equals(guess, StringComparison.OrdinalIgnoreCase)).ToList();
+                if (matchedSeasons.Count > 0 && !guessedMIPs.Contains(guess))
+                {
+                    guessedMIPs.Add(guess);
+                    Console.WriteLine($"Richtig! {guess} war Most Improved Player in den folgenden Saisons:");
+                    foreach (var season in matchedSeasons)
+                    {
+                        Console.WriteLine($"- {season.Key}");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Falsch oder bereits erraten, versuche es erneut.");
                 }
             }
-            else
-            {
-                Console.WriteLine("Falsch oder bereits erraten, versuche es erneut.");
-            }
-        }
 
-        Console.WriteLine("\nGlückwunsch! Du hast alle Most Improved Players erraten.");
+            Console.WriteLine("\nGlückwunsch! Du hast alle Most Improved Players erraten.");
+        }
+        catch (Exception ex)
+        {
+            ErrorHandler.HandleError("Ein Fehler ist aufgetreten", ex);
+        }
     }
 
     private void DisplayAwards()

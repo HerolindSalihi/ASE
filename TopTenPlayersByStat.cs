@@ -1,4 +1,9 @@
-public class TopTenPlayersByStat
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+
+public class TopTenPlayersByStat : IGame
 {
     private string[] lines;
     private string[] headers;
@@ -7,6 +12,18 @@ public class TopTenPlayersByStat
     {
         this.lines = lines;
         this.headers = headers;
+    }
+
+    public void Start()
+    {
+        try
+        {
+            ShowTopTenPlayersByStat();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Ein Fehler ist aufgetreten: {ex.Message}");
+        }
     }
 
     public void ShowTopTenPlayersByStat()

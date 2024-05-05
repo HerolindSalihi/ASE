@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 public class ChampionshipsGame : IGame  // Implementiere das IGame Interface
@@ -8,12 +7,13 @@ public class ChampionshipsGame : IGame  // Implementiere das IGame Interface
     private List<string[]>? playersData; // Feld als nullable deklarieren
     private HashSet<string> guessedPlayers = new HashSet<string>();
 
-    public ChampionshipsGame(string filePath)
+    // Konstruktor erhält DataStore-Instanz
+    public ChampionshipsGame(DataStore dataStore)
     {
         playersData = new List<string[]>();
         try
         {
-            LoadData(filePath);
+            LoadData(dataStore);
         }
         catch (Exception ex)
         {
@@ -23,14 +23,14 @@ public class ChampionshipsGame : IGame  // Implementiere das IGame Interface
         }
     }
 
-    private void LoadData(string filePath)
+    private void LoadData(DataStore dataStore)
     {
-        if (!File.Exists(filePath))
+        string[] lines = dataStore.Lines ?? Array.Empty<string>();
+        if (lines.Length == 0)
         {
-            throw new FileNotFoundException($"Die Datei '{filePath}' wurde nicht gefunden.");
+            throw new Exception("Die Datenquelle ist leer.");
         }
         
-        string[] lines = File.ReadAllLines(filePath);
         try
         {
             playersData = lines.Skip(1)

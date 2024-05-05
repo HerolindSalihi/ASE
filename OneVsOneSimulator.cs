@@ -1,13 +1,24 @@
-public class OneVsOneSimulator
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+public class OneVsOneSimulator : IGame
 {
-    private string[] lines;
+    private List<string[]> players;
     private string[] headers;
 
-    public OneVsOneSimulator(string[] lines, string[] headers)
+    // Konstruktor erhält DataStore-Instanz
+    public OneVsOneSimulator(DataStore dataStore)
     {
-        this.lines = lines;
-        this.headers = headers;
+        if (dataStore.Lines == null || dataStore.Lines.Length < 2)
+        {
+            throw new InvalidOperationException("Nicht genügend Daten im DataStore vorhanden.");
+        }
+
+        headers = dataStore.Lines[0].Split(',');  // Setzt die Kopfzeilen
+        players = dataStore.Lines.Skip(1).Select(line => line.Split(',')).ToList();
     }
+
     public void Start()
     {
         try
@@ -24,11 +35,11 @@ public class OneVsOneSimulator
     {
         Console.Write("Gib den Namen des ersten Spielers ein: ");
         string? firstPlayerName = Console.ReadLine();
-        var firstPlayerData = lines.Skip(1).Select(line => line.Split(',')).FirstOrDefault(columns => columns[1].Equals(firstPlayerName, StringComparison.OrdinalIgnoreCase));
+        var firstPlayerData = players.FirstOrDefault(columns => columns.Length > 1 && columns[1].Equals(firstPlayerName, StringComparison.OrdinalIgnoreCase));
 
         Console.Write("Gib den Namen des zweiten Spielers ein: ");
         string? secondPlayerName = Console.ReadLine();
-        var secondPlayerData = lines.Skip(1).Select(line => line.Split(',')).FirstOrDefault(columns => columns[1].Equals(secondPlayerName, StringComparison.OrdinalIgnoreCase));
+        var secondPlayerData = players.FirstOrDefault(columns => columns.Length > 1 && columns[1].Equals(secondPlayerName, StringComparison.OrdinalIgnoreCase));
 
         if (firstPlayerData == null || secondPlayerData == null)
         {
@@ -74,5 +85,4 @@ public class OneVsOneSimulator
         else
             Console.WriteLine("Es ist ein Unentschieden!");
     }
-
 }

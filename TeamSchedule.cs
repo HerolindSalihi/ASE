@@ -8,19 +8,26 @@ public class TeamSchedule : IGame
     private List<string[]> games;
     private string[] headers;
 
-    public TeamSchedule(string filePath)
+    public TeamSchedule(DataStore dataStore)
     {
         games = new List<string[]>();
         headers = Array.Empty<string>();
-        LoadData(filePath);
+        LoadData(dataStore);
     }
 
-    private void LoadData(string filePath)
+    private void LoadData(DataStore dataStore)
     {
-        string[] lines = File.ReadAllLines(filePath);
+        if (dataStore.Lines == null || dataStore.Lines.Length == 0)
+        {
+            Console.WriteLine("Keine Daten zum Laden verfügbar.");
+            return;
+        }
+
+        string[] lines = dataStore.Lines;
         headers = lines[0].Split(',');  // Angenommen, die CSV-Header beinhalten die notwendigen Spalten
         games = lines.Skip(1).Select(line => line.Split(',')).ToList();
     }
+
 
     public void Start()
     {
@@ -34,7 +41,7 @@ public class TeamSchedule : IGame
         string? input = Console.ReadLine();
         string teamName = input?.Trim() ?? string.Empty;
 
-        var teamGames = games.Where(game => game[1].Equals(teamName, StringComparison.OrdinalIgnoreCase) || game[2].Equals(teamName, StringComparison.OrdinalIgnoreCase)).ToList();
+        var teamGames = games.Where(game => game.Length > 2 && (game[1].Equals(teamName, StringComparison.OrdinalIgnoreCase) || game[2].Equals(teamName, StringComparison.OrdinalIgnoreCase))).ToList();
 
         if (teamGames.Count == 0)
         {
@@ -48,7 +55,7 @@ public class TeamSchedule : IGame
             string homeTeam = game[1];
             string awayTeam = game[2];
             string date = game[0];
-            string score = game[3]; // Angenommen, dass der Spielstand in der vierten Spalte steht
+            string score = game.Length > 3 ? game[3] : "Ergebnis unbekannt"; // Sicherstellen, dass die Indexgrenzen eingehalten werden
 
             Console.WriteLine($"{date}: {homeTeam} vs {awayTeam} - Ergebnis: {score}");
         }

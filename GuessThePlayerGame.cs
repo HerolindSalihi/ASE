@@ -1,59 +1,55 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
-public class GuessThePlayerGame : IGame
+public class GuessThePlayerGame : IGame  // Implementiert das IGame Interface
 {
-    private List<string[]> playersData;
-    private string[] headers;
+    private List<string[]> playersData; // Speichert Spielerdaten nach dem Laden
+    private string[] headers; // Speichert die Kopfzeilen der Daten, d.h. die Spaltennamen
 
-    public GuessThePlayerGame(string filePath)
+    // Konstruktor, der DataStore als Datenquelle verwendet
+    public GuessThePlayerGame(DataStore dataStore)
     {
         playersData = new List<string[]>();
         headers = Array.Empty<string>();
-        LoadData(filePath);
+        LoadData(dataStore); // Lädt die Daten beim Erstellen der Instanz
     }
 
-    private void LoadData(string filePath)
+    // Lädt Daten aus dem DataStore
+    private void LoadData(DataStore dataStore)
     {
-        try
+        if (dataStore.Lines == null || dataStore.Lines.Length < 2)
         {
-            string[] lines = File.ReadAllLines(filePath);
-            if (lines.Length < 2)
-            {
-                throw new InvalidDataException($"Die Datei '{filePath}' enthält nicht genügend Daten.");
-            }
+            throw new InvalidDataException("Die Datenquelle enthält nicht genügend Daten.");
+        }
 
-            headers = lines[0].Split(',');
-            playersData = lines.Skip(1).Select(line => line.Split(',')).ToList();
-        }
-        catch (Exception ex)
-        {
-            ErrorHandler.HandleError("Fehler beim Laden der Daten", ex);
-        }
+        headers = dataStore.Lines[0].Split(','); // Erste Zeile als Kopfzeilen verwenden
+        playersData = dataStore.Lines.Skip(1).Select(line => line.Split(',')).ToList(); // Restliche Zeilen als Daten speichern
     }
 
+    // Startet das Ratespiel
     public void Start()
     {
         Play();
     }
 
+    // Kernfunktion des Spiels
     private void Play()
     {
         try
         {
             Random random = new Random();
-            var player = playersData[random.Next(playersData.Count)];
-            List<int> availableIndexes = Enumerable.Range(0, headers.Length).ToList();  // Indizes aller Spalten
+            var player = playersData[random.Next(playersData.Count)]; // Zufälligen Spieler auswählen
+            List<int> availableIndexes = Enumerable.Range(0, headers.Length).ToList(); // Liste aller möglichen Indexe für Spalten
 
             Console.WriteLine("Guess The Player: Rate den Namen des Spielers basierend auf den folgenden Fakten.");
 
+            // Bietet dem Spieler Fakten, um den Namen des Spielers zu erraten
             while (availableIndexes.Count > 0)
             {
                 int factIndex = random.Next(availableIndexes.Count);
                 int columnIndex = availableIndexes[factIndex];
-                availableIndexes.RemoveAt(factIndex);  // Entferne den Index, damit der Fakt nicht wiederholt wird
+                availableIndexes.RemoveAt(factIndex); // Verbrauchten Index entfernen
 
                 Console.WriteLine($"{headers[columnIndex]}: {player[columnIndex]}");
                 Console.Write("Rate den Namen des Spielers oder gib 'weiter' ein, um einen weiteren Fakt zu erhalten: ");

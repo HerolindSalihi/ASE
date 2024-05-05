@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 public class AllTimePointsGame : IGame  // Implementiere das IGame Interface
@@ -8,46 +7,36 @@ public class AllTimePointsGame : IGame  // Implementiere das IGame Interface
     private List<string[]> playersData = new List<string[]>();
     private HashSet<string> guessedPlayers = new HashSet<string>();
 
-    public AllTimePointsGame(string filePath)
+    // Konstruktor erhält DataStore-Instanz
+    public AllTimePointsGame(DataStore dataStore)
     {
-        if (!string.IsNullOrWhiteSpace(filePath) && File.Exists(filePath))
+        if (dataStore.Lines == null || dataStore.Lines.Length == 0)
         {
-            LoadData(filePath);
+            Console.WriteLine("Es wurden keine Daten geladen.");
+            return;
         }
-        else
-        {
-            Console.WriteLine("Dateipfad ist ungültig oder leer.");
-        }
+        LoadData(dataStore);
     }
 
-    private void LoadData(string filePath)
+    private void LoadData(DataStore dataStore)
     {
-        try
+        string[] lines = dataStore.Lines;
+        foreach (var line in lines.Skip(1))  // Header überspringen
         {
-            string[] lines = File.ReadAllLines(filePath);
-            foreach (var line in lines.Skip(1))  // Header überspringen
+            string[] fields = line.Split(',');
+            if (fields.Length >= 3 && int.TryParse(fields[2], out _))  // Stelle sicher, dass genügend Felder vorhanden sind und das Punktefeld gültig ist
             {
-                string[] fields = line.Split(',');
-                if (fields.Length >= 3 && int.TryParse(fields[2], out _))  // Mindestens drei Felder und das dritte Feld sind die Punkte
-                {
-                    playersData.Add(fields);
-                }
-                else
-                {
-                    Console.WriteLine($"Ungültige Datensatzformatierung: {line}");
-                }
+                playersData.Add(fields);
             }
-
-            playersData = playersData.OrderByDescending(fields => int.Parse(fields[2])).Take(30).ToList();  // Punkte absteigend sortieren, Top 30 Spieler
+            else
+            {
+                Console.WriteLine($"Ungültige Datensatzformatierung: {line}");
+            }
         }
-        catch (Exception ex)
-        {
-            ErrorHandler.HandleError("Fehler beim Laden der Spielerdaten", ex);
-            throw; // Hier könntest du entscheiden, ob du die Ausnahme weiterwerfen willst oder nicht.
-        }
+        playersData = playersData.OrderByDescending(fields => int.Parse(fields[2])).Take(30).ToList();  // Top 30 Spieler nach Punkten
     }
 
-    public void Start() // Ersetzt die "Play" Methode durch "Start"
+    public void Start()
     {
         Console.WriteLine("Willkommen zum All-Time Points Erratespiel!");
         Console.WriteLine("Versuche, die Top 30 Spieler mit den meisten Punkten in der Geschichte der NBA zu erraten.");

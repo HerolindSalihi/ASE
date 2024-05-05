@@ -7,9 +7,23 @@ public class GuessTheTeam : IGame
     private List<string[]> players;
     private int score = 0;
 
-    public GuessTheTeam(string[] lines)
+    // Konstruktor erhält DataStore-Instanz
+    public GuessTheTeam(DataStore dataStore)
     {
-        players = lines.Skip(1).Select(line => line.Split(',')).ToList();
+        players = new List<string[]>();
+        LoadData(dataStore); // Methode zum Laden der Daten aus DataStore
+    }
+
+    private void LoadData(DataStore dataStore)
+    {
+        // Überprüfung, ob Daten vorhanden und ausreichend sind
+        if (dataStore.Lines == null || dataStore.Lines.Length < 2)
+        {
+            throw new InvalidOperationException("Nicht genügend Daten im DataStore vorhanden.");
+        }
+
+        // Überspringen der Kopfzeile und Verarbeiten der restlichen Zeilen
+        players = dataStore.Lines.Skip(1).Select(line => line.Split(',')).ToList();
     }
 
     public void Start()

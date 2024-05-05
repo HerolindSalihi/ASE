@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 public class DraftTeam : IGame
@@ -10,14 +9,20 @@ public class DraftTeam : IGame
     private string[] headers;
     private int championshipsWon = 0;
 
-    public DraftTeam(string[] lines, string[] headers)
+    // Konstruktor erhält DataStore-Instanz
+    public DraftTeam(DataStore dataStore)
     {
-        this.headers = headers;
-        availablePlayers = lines.Skip(1).Select(line => line.Split(',')).ToList();
+        if (dataStore.Lines == null || dataStore.Lines.Length < 2)
+        {
+            throw new InvalidOperationException("Nicht genügend Daten im DataStore vorhanden.");
+        }
+
+        headers = dataStore.Lines[0].Split(',');  // Setzt die Kopfzeilen
+        availablePlayers = dataStore.Lines.Skip(1).Select(line => line.Split(',')).ToList();
         chosenPlayers = new List<string[]>();
     }
 
-    public void Start() // Implementierung der IGame-Start-Methode
+    public void Start()
     {
         Console.WriteLine("Willkommen zum Spieler-Draft! Wähle 10 Spieler für dein Team.");
         for (int season = 1; season <= 10; season++)

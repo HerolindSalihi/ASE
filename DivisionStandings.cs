@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 public class DivisionStandings : IGame
@@ -9,32 +8,26 @@ public class DivisionStandings : IGame
     private List<string[]> westernStandings = new List<string[]>();
     private string[] headers = Array.Empty<string>();
 
-    public DivisionStandings(string filePath)
+    // Konstruktor erhält DataStore-Instanz
+    public DivisionStandings(DataStore dataStore)
     {
-        LoadData(filePath);
+        LoadData(dataStore);  // Lade die Daten aus dem DataStore
     }
 
-    private void LoadData(string filePath)
+    private void LoadData(DataStore dataStore)
     {
-        if (!File.Exists(filePath))
+        if (dataStore.Lines == null || dataStore.Lines.Length == 0)
         {
-            Console.WriteLine($"Die Datei '{filePath}' wurde nicht gefunden.");
+            Console.WriteLine("Die Datei enthält keine Daten.");
             return;
         }
 
-        string[] lines = File.ReadAllLines(filePath);
-        if (lines.Length > 0)
-        {
-            headers = lines[0].Split(',');
-            var data = lines.Skip(1).Select(line => line.Split(','));
+        string[] lines = dataStore.Lines;
+        headers = lines[0].Split(',');
+        var data = lines.Skip(1).Select(line => line.Split(','));
 
-            easternStandings = data.Where(line => line.Length > 2 && line[2].Trim().ToLower() == "e").ToList();
-            westernStandings = data.Where(line => line.Length > 2 && line[2].Trim().ToLower() == "w").ToList();
-        }
-        else
-        {
-            Console.WriteLine("Die Datei enthält keine Daten.");
-        }
+        easternStandings = data.Where(line => line.Length > 2 && line[2].Trim().ToLower() == "e").ToList();
+        westernStandings = data.Where(line => line.Length > 2 && line[2].Trim().ToLower() == "w").ToList();
     }
 
     public void Start()

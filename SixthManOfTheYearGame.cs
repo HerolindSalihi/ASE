@@ -1,25 +1,31 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
-public class SixthManOfTheYearGame
+public class SixthManOfTheYearGame : IGame
 {
     private Dictionary<string, string> smotyBySeason;
     private HashSet<string> guessedSMOTYs = new HashSet<string>();
 
-    public SixthManOfTheYearGame(string filePath)
+    // Konstruktor erhält DataStore-Instanz
+    public SixthManOfTheYearGame(DataStore dataStore)
     {
         smotyBySeason = new Dictionary<string, string>();
-        LoadData(filePath);
+        LoadData(dataStore);  // Laden der Daten aus DataStore
     }
 
-    private void LoadData(string filePath)
+    // Lädt die Daten aus dem DataStore
+    private void LoadData(DataStore dataStore)
     {
-        string[] lines = File.ReadAllLines(filePath);
-        smotyBySeason = lines.Skip(1)  // Überspringe den Header
-                            .Select(line => line.Split(','))
-                            .ToDictionary(fields => fields[0].Trim(), fields => fields[1].Trim());  // Angenommen, dass die erste Spalte die Saison und die zweite den SMOTY enthält
+        if (dataStore.Lines == null || dataStore.Lines.Length < 2)
+        {
+            throw new InvalidOperationException("Nicht genügend Daten im DataStore vorhanden.");
+        }
+
+        // Verarbeitung der Datenzeilen
+        smotyBySeason = dataStore.Lines.Skip(1)
+                                   .Select(line => line.Split(','))
+                                   .ToDictionary(fields => fields[0].Trim(), fields => fields[1].Trim());  // Annahme, dass die erste Spalte die Saison und die zweite den SMOTY enthält
     }
 
     public void Start()

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 public class MVPGame : IGame
@@ -8,18 +7,25 @@ public class MVPGame : IGame
     private Dictionary<string, string> mvpBySeason;
     private HashSet<string> guessedMVPs = new HashSet<string>();
 
-    public MVPGame(string filePath)
+    // Konstruktor erhält DataStore-Instanz
+    public MVPGame(DataStore dataStore)
     {
         mvpBySeason = new Dictionary<string, string>();
-        LoadData(filePath);
+        LoadData(dataStore);  // Laden der Daten aus DataStore
     }
 
-    private void LoadData(string filePath)
+    // Lädt die Daten aus dem DataStore
+    private void LoadData(DataStore dataStore)
     {
-        string[] lines = File.ReadAllLines(filePath);
-        mvpBySeason = lines.Skip(1)  // Überspringe den Header
-                            .Select(line => line.Split(','))
-                            .ToDictionary(fields => fields[0].Trim(), fields => fields[1].Trim());  // Angenommen, dass die erste Spalte die Saison und die zweite den MVP enthält
+        if (dataStore.Lines == null || dataStore.Lines.Length < 2)
+        {
+            throw new InvalidOperationException("Nicht genügend Daten im DataStore vorhanden.");
+        }
+
+        // Verarbeitung der Datenzeilen
+        mvpBySeason = dataStore.Lines.Skip(1)  // Kopfzeile überspringen
+                                     .Select(line => line.Split(','))
+                                     .ToDictionary(fields => fields[0].Trim(), fields => fields[1].Trim());  // Spalten für Saison und MVP
     }
 
     public void Start()

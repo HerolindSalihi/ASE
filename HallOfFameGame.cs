@@ -1,26 +1,33 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 public class HallOfFameGame : IGame
 {
-    private List<string[]> playersData;
-    private HashSet<string> guessedPlayers = new HashSet<string>();
+    private List<string[]> playersData;  // Speichert Spielerdaten nach dem Laden
+    private HashSet<string> guessedPlayers = new HashSet<string>();  // Verfolgt die geratenen Spieler
 
-    public HallOfFameGame(string filePath)
+    // Konstruktor erhält DataStore als Argument anstelle eines Dateipfads
+    public HallOfFameGame(DataStore dataStore)
     {
         playersData = new List<string[]>();
-        LoadData(filePath);
+        LoadData(dataStore);  // Laden der Daten aus DataStore
     }
 
-    private void LoadData(string filePath)
+    // Lädt die Daten aus dem DataStore
+    private void LoadData(DataStore dataStore)
     {
-        string[] lines = File.ReadAllLines(filePath);
-        playersData = lines.Skip(1)  // Header überspringen
+        if (dataStore.Lines == null || dataStore.Lines.Length < 2)
+        {
+            throw new InvalidOperationException("Nicht genügend Daten im DataStore vorhanden.");
+        }
+
+        // Verarbeitung der Datenzeilen
+        playersData = dataStore.Lines.Skip(1)  // Kopfzeile überspringen
                             .Select(line => line.Split(','))
-                            .OrderByDescending(fields => double.Parse(fields[2]))  // Angenommen, Wahrscheinlichkeit ist in der dritten Spalte
-                            .Take(25)  // Top 25 Spieler
+                            .Where(fields => fields.Length > 2 && double.TryParse(fields[2], out _))  // Sicherstellen, dass die Konvertierung möglich ist
+                            .OrderByDescending(fields => double.Parse(fields[2]))  // Sortierung nach der Wahrscheinlichkeit (angenommen Index 2)
+                            .Take(25)  // Top 25 Kandidaten
                             .ToList();
     }
 

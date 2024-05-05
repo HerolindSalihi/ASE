@@ -8,10 +8,16 @@ public class StatisticsComparisonGame : IGame
     private string[] headers;
     private Random random = new Random();
 
-    public StatisticsComparisonGame(string[] lines, string[] headers)
+    // Konstruktor erhält DataStore-Instanz
+    public StatisticsComparisonGame(DataStore dataStore)
     {
-        this.headers = headers;
-        players = lines.Skip(1).Select(line => line.Split(',')).ToList();
+        if (dataStore.Lines == null || dataStore.Lines.Length < 2)
+        {
+            throw new InvalidOperationException("Nicht genügend Daten im DataStore vorhanden.");
+        }
+
+        headers = dataStore.Lines[0].Split(',');  // Setze die Kopfzeilen
+        players = dataStore.Lines.Skip(1).Select(line => line.Split(',')).ToList();  // Verarbeite die Spielerdaten
     }
 
     public void Start()
@@ -65,4 +71,3 @@ public class StatisticsComparisonGame : IGame
         Console.WriteLine($"\nSpiel beendet. Deine Punktzahl: {score}/20");
     }
 }
-

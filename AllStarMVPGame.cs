@@ -1,39 +1,31 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 public class AllStarMVPGame : IGame
 {
     private Dictionary<string, string> amvpBySeason = new Dictionary<string, string>();
+    private HashSet<string> guessedAMVPs = new HashSet<string>();
 
-    public AllStarMVPGame(string filePath)
+    // Konstruktor erhält DataStore-Instanz
+    public AllStarMVPGame(DataStore dataStore)
     {
-        LoadData(filePath);
+        LoadData(dataStore); // Lade die Daten aus dem DataStore
     }
 
-    private void LoadData(string filePath)
+    private void LoadData(DataStore dataStore)
     {
-        try
+        if (dataStore.Lines == null || dataStore.Lines.Length <= 1)
         {
-            if (!File.Exists(filePath))
-            {
-                throw new FileNotFoundException($"Die Datei '{filePath}' wurde nicht gefunden.");
-            }
-
-            string[] lines = File.ReadAllLines(filePath);
-            amvpBySeason = lines.Skip(1)
-                                .Select(line => line.Split(','))
-                                .Where(parts => parts.Length >= 2)
-                                .ToDictionary(fields => fields[0].Trim(), fields => fields[1].Trim());
+            Console.WriteLine("Es wurden keine All-Star MVP-Daten geladen.");
+            return;
         }
-        catch (Exception ex)
-        {
-            ErrorHandler.HandleError("Fehler beim Laden der All-Star MVP-Daten", ex);
 
-            // Hier kannst du entscheiden, ob das Programm beendet werden soll oder nicht
-            Environment.Exit(1);  // Beendet das Programm, wenn kritischer Fehler auftritt
-        }
+        string[] lines = dataStore.Lines;
+        amvpBySeason = lines.Skip(1)
+                            .Select(line => line.Split(','))
+                            .Where(parts => parts.Length >= 2)
+                            .ToDictionary(fields => fields[0].Trim(), fields => fields[1].Trim());
     }
 
     public void Start()
@@ -58,7 +50,7 @@ public class AllStarMVPGame : IGame
                 continue;
             }
             string guess = input.Trim();
-            if (string.IsNullOrEmpty(guess))
+                        if (string.IsNullOrEmpty(guess))
             {
                 Console.WriteLine("Ungültige Eingabe, bitte versuche es erneut.");
                 continue;
@@ -97,7 +89,4 @@ public class AllStarMVPGame : IGame
             }
         }
     }
-
-    private HashSet<string> guessedAMVPs = new HashSet<string>(); // Feld initialisieren
 }
-    

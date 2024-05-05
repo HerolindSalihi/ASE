@@ -1,17 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-
+// Klasse zum Lesen von Daten aus einer CSV-Datei
 public class CsvDataReader
 {
-    private string filePath;
+    private string filePath; // Pfad zur CSV-Datei
 
+    // Konstruktor
     public CsvDataReader(string filePath)
     {
         this.filePath = filePath;
     }
 
+    // Methode zum Lesen aller Daten aus der CSV-Datei
     public List<string[]> ReadData()
     {
         List<string[]> data = new List<string[]>();
@@ -39,6 +37,7 @@ public class CsvDataReader
         return data;
     }
 
+    // Methode zum Lesen der Kopfzeile aus der CSV-Datei
     public string[] ReadHeaderRow()
     {
         if (!File.Exists(filePath))
@@ -58,6 +57,7 @@ public class CsvDataReader
         return lines.First().Split(',');
     }
 
+    // Methode zum Lesen aller Zeilen aus der CSV-Datei, außer der Kopfzeile
     public List<string[]> ReadAllRows()
     {
         List<string[]> data = new List<string[]>();

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 public class TopTenPlayersByStat : IGame
@@ -8,10 +7,11 @@ public class TopTenPlayersByStat : IGame
     private string[] lines;
     private string[] headers;
 
-    public TopTenPlayersByStat(string[] lines, string[] headers)
+    // Konstruktor erhält DataStore-Instanz
+    public TopTenPlayersByStat(DataStore dataStore)
     {
-        this.lines = lines;
-        this.headers = headers;
+        this.lines = dataStore.Lines ?? Array.Empty<string>();
+        this.headers = dataStore.Headers ?? Array.Empty<string>();
     }
 
     public void Start()
@@ -37,7 +37,13 @@ public class TopTenPlayersByStat : IGame
         if (int.TryParse(Console.ReadLine(), out int column) && column >= 1 && column <= headers.Length)
         {
             column--;
-            var topPlayers = lines.Skip(1).Select(line => line.Split(',')).Where(columns => decimal.TryParse(columns[column], out _)).Select(columns => new { Player = columns[1], StatValue = decimal.Parse(columns[column]) }).OrderByDescending(x => x.StatValue).Take(10).ToList();
+            var topPlayers = lines.Skip(1)
+                                  .Select(line => line.Split(','))
+                                  .Where(columns => columns.Length > column && decimal.TryParse(columns[column], out _))
+                                  .Select(columns => new { Player = columns[1], StatValue = decimal.Parse(columns[column]) })
+                                  .OrderByDescending(x => x.StatValue)
+                                  .Take(10)
+                                  .ToList();
             if (topPlayers.Count == 0)
             {
                 Console.WriteLine("Keine gültigen Daten gefunden.");

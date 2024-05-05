@@ -1,38 +1,38 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 public class DefensivePlayerOfTheYearGame : IGame  // Implementierung des IGame Interfaces
 {
-    private Dictionary<string, string>? dpoyBySeason; // Feld als nullable deklarieren
+    private Dictionary<string, string> dpoyBySeason = new Dictionary<string, string>(); // Entferne Nullable, da wir sicherstellen, dass es immer initialisiert ist
     private HashSet<string> guessedDPOYs = new HashSet<string>();
 
-    public DefensivePlayerOfTheYearGame(string filePath)
+    // Konstruktor erhält DataStore-Instanz
+    public DefensivePlayerOfTheYearGame(DataStore dataStore)
     {
-        LoadData(filePath);
+        LoadData(dataStore);
     }
 
-    private void LoadData(string filePath)
+    private void LoadData(DataStore dataStore)
     {
-        if (!File.Exists(filePath))
+        if (dataStore.Lines == null || dataStore.Lines.Length == 0)
         {
-            Console.WriteLine($"Die Datei '{filePath}' wurde nicht gefunden.");
-            dpoyBySeason = new Dictionary<string, string>(); // Sicherstellen, dass die Variable initialisiert ist
+            Console.WriteLine("Fehler beim Laden der Daten für das Defensive Player of the Year-Ratespiel oder keine Daten vorhanden.");
             return;
         }
 
-        string[] lines = File.ReadAllLines(filePath);
+        string[] lines = dataStore.Lines;
         dpoyBySeason = lines.Skip(1)  
                             .Select(line => line.Split(','))
+                            .Where(fields => fields.Length >= 2)
                             .ToDictionary(fields => fields[0].Trim(), fields => fields[1].Trim());  
     }
 
-    public void Start() // Ersetzt die Play Methode und implementiert die IGame.Start Methode
+    public void Start()
     {
-        if (dpoyBySeason == null || dpoyBySeason.Count == 0)
+        if (dpoyBySeason.Count == 0)
         {
-            Console.WriteLine("Fehler beim Laden der Daten für das Defensive Player of the Year-Ratespiel oder keine Daten vorhanden.");
+            Console.WriteLine("Keine Daten vorhanden.");
             return;
         }
 
@@ -71,12 +71,6 @@ public class DefensivePlayerOfTheYearGame : IGame  // Implementierung des IGame 
 
     private void DisplayDPOYs()
     {
-        if (dpoyBySeason == null)
-        {
-            Console.WriteLine("Daten sind nicht verfügbar.");
-            return;
-        }
-
         foreach (var season in dpoyBySeason)
         {
             if (guessedDPOYs.Contains(season.Value))

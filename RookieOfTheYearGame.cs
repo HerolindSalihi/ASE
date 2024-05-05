@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 public class RookieOfTheYearGame : IGame
@@ -8,18 +7,25 @@ public class RookieOfTheYearGame : IGame
     private Dictionary<string, string> rookieBySeason;
     private HashSet<string> guessedRookies = new HashSet<string>();
 
-    public RookieOfTheYearGame(string filePath)
+    // Konstruktor erhält DataStore-Instanz
+    public RookieOfTheYearGame(DataStore dataStore)
     {
         rookieBySeason = new Dictionary<string, string>();
-        LoadData(filePath);
+        LoadData(dataStore);  // Laden der Daten aus DataStore
     }
 
-    private void LoadData(string filePath)
+    // Lädt die Daten aus dem DataStore
+    private void LoadData(DataStore dataStore)
     {
-        string[] lines = File.ReadAllLines(filePath);
-        rookieBySeason = lines.Skip(1)  // Überspringe den Header
-                            .Select(line => line.Split(','))
-                            .ToDictionary(fields => fields[0].Trim(), fields => fields[1].Trim());  // Angenommen, dass die erste Spalte die Saison und die zweite den Rookie enthält
+        if (dataStore.Lines == null || dataStore.Lines.Length < 2)
+        {
+            throw new InvalidOperationException("Nicht genügend Daten im DataStore vorhanden.");
+        }
+
+        // Verarbeitung der Datenzeilen
+        rookieBySeason = dataStore.Lines.Skip(1)  // Kopfzeile überspringen
+                                    .Select(line => line.Split(','))
+                                    .ToDictionary(fields => fields[0].Trim(), fields => fields[1].Trim());  // Spalten für Saison und Rookie
     }
 
     public void Start()

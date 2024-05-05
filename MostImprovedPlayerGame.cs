@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 public class MostImprovedPlayerGame : IGame
@@ -8,18 +7,25 @@ public class MostImprovedPlayerGame : IGame
     private Dictionary<string, string> mipBySeason;
     private HashSet<string> guessedMIPs = new HashSet<string>();
 
-    public MostImprovedPlayerGame(string filePath)
+    // Konstruktor erhält DataStore-Instanz
+    public MostImprovedPlayerGame(DataStore dataStore)
     {
         mipBySeason = new Dictionary<string, string>();
-        LoadData(filePath);
+        LoadData(dataStore);  // Laden der Daten aus DataStore
     }
 
-    private void LoadData(string filePath)
+    // Lädt die Daten aus dem DataStore
+    private void LoadData(DataStore dataStore)
     {
-        string[] lines = File.ReadAllLines(filePath);
-        mipBySeason = lines.Skip(1)
-                           .Select(line => line.Split(','))
-                           .ToDictionary(fields => fields[0].Trim(), fields => fields[1].Trim());
+        if (dataStore.Lines == null || dataStore.Lines.Length < 2)
+        {
+            throw new InvalidOperationException("Nicht genügend Daten im DataStore vorhanden.");
+        }
+
+        // Verarbeitung der Datenzeilen
+        mipBySeason = dataStore.Lines.Skip(1)
+                                    .Select(line => line.Split(','))
+                                    .ToDictionary(fields => fields[0].Trim(), fields => fields[1].Trim());
     }
 
     public void Start()

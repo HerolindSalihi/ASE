@@ -4,16 +4,22 @@ using System.Linq;
 
 public class DreamTeamVsChamps : IGame
 {
-    private string[] lines;
+    private List<string[]> players;
     private string[] headers;
 
-    public DreamTeamVsChamps(string[] lines, string[] headers)
+    // Konstruktor erhält DataStore-Instanz
+    public DreamTeamVsChamps(DataStore dataStore)
     {
-        this.lines = lines;
-        this.headers = headers;
+        if (dataStore.Lines == null || dataStore.Lines.Length < 2)
+        {
+            throw new InvalidOperationException("Nicht genügend Daten im DataStore vorhanden.");
+        }
+
+        headers = dataStore.Lines[0].Split(',');  // Setzt die Kopfzeilen
+        players = dataStore.Lines.Skip(1).Select(line => line.Split(',')).ToList();
     }
 
-    public void Start()  // Implementiert die Start-Methode des IGame-Interfaces
+    public void Start()
     {
         PlayAgainstChamps();
     }
@@ -21,12 +27,11 @@ public class DreamTeamVsChamps : IGame
     private void PlayAgainstChamps()
     {
         string champsTeam = "DEN";  // Champion-Team, z.B. "DEN" für Denver Nuggets
-        var champPlayers = lines.Skip(1)
-                                .Select(line => line.Split(','))
-                                .Where(columns => columns[4].Equals(champsTeam, StringComparison.OrdinalIgnoreCase))
-                                .OrderByDescending(columns => decimal.Parse(columns.Last()))
-                                .Take(5)
-                                .ToList();
+        var champPlayers = players
+                            .Where(columns => columns.Length > 4 && columns[4].Equals(champsTeam, StringComparison.OrdinalIgnoreCase))
+                            .OrderByDescending(columns => decimal.Parse(columns.Last()))
+                            .Take(5)
+                            .ToList();
 
         decimal champsScore = champPlayers.Sum(player => decimal.Parse(player.Last()));
         Console.WriteLine($"Gesamtpunktzahl für {champsTeam} Champs: {champsScore}");
@@ -43,9 +48,8 @@ public class DreamTeamVsChamps : IGame
                 continue;
             }
 
-            var playerData = lines.Skip(1)
-                                  .Select(line => line.Split(','))
-                                  .FirstOrDefault(columns => columns[1].Equals(playerName, StringComparison.OrdinalIgnoreCase));
+            var playerData = players
+                                .FirstOrDefault(columns => columns.Length > 1 && columns[1].Equals(playerName, StringComparison.OrdinalIgnoreCase));
 
             if (playerData == null)
             {

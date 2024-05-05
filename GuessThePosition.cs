@@ -7,9 +7,25 @@ public class GuessThePosition : IGame
     private List<string[]> players;
     private int score = 0;
 
-    public GuessThePosition(string[] lines)
+    // Anpassen des Konstruktors, um DataStore zu akzeptieren
+    public GuessThePosition(DataStore dataStore)
     {
-        players = lines.Skip(1).Select(line => line.Split(',')).ToList();
+        players = new List<string[]>();
+        // Methode, um Daten aus DataStore zu laden
+        LoadData(dataStore);
+    }
+
+    // Methode zum Laden der Daten aus dem DataStore
+    private void LoadData(DataStore dataStore)
+    {
+        // Sicherstellen, dass Lines nicht null und ausreichend Daten enthalten sind
+        if (dataStore.Lines == null || dataStore.Lines.Length < 2)
+        {
+            throw new InvalidOperationException("Nicht genügend Daten im DataStore vorhanden.");
+        }
+
+        // Überspringen der Kopfzeile und Verarbeiten der restlichen Zeilen
+        players = dataStore.Lines.Skip(1).Select(line => line.Split(',')).ToList();
     }
 
     public void Start()

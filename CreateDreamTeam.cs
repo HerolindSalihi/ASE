@@ -1,20 +1,25 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
-public class CreateDreamTeam : IGame  // Implementierung des IGame Interfaces
+public class CreateDreamTeam : IGame
 {
-    private string[] lines;
+    private List<string[]> players;
     private Safe<string[]> headers;
 
-    public CreateDreamTeam(string[] lines, Safe<string[]> headers)
+    // Annahme, dass Safe<T> konstruiert werden kann oder eine Methode zur Initialisierung hat
+    public CreateDreamTeam(DataStore dataStore)
     {
-        this.lines = lines;
-        this.headers = headers;
+        if (dataStore.Lines == null || dataStore.Lines.Length < 2)
+        {
+            throw new InvalidOperationException("Nicht genügend Daten im DataStore vorhanden.");
+        }
+
+        headers = new Safe<string[]>(dataStore.Lines[0].Split(',')); // Annahme, Safe<string[]> hat einen Konstruktor, der ein string[] akzeptiert
+        players = dataStore.Lines.Skip(1).Select(line => line.Split(',')).ToList();
     }
 
-    public void Start() // Ersetzt FormDreamTeam und implementiert IGame.Start
+    public void Start()
     {
         List<string> selectedPlayers = new List<string>();
         Console.WriteLine("Willkommen zur Erstellung deines Dream Teams! Bitte wähle 5 Spieler.");
@@ -34,7 +39,7 @@ public class CreateDreamTeam : IGame  // Implementierung des IGame Interfaces
                 i--;
                 continue;
             }
-            var playerData = lines.Skip(1).Select(line => line.Split(',')).FirstOrDefault(columns => columns.Length > 1 && columns[1].Equals(playerName, StringComparison.OrdinalIgnoreCase));
+            var playerData = players.FirstOrDefault(columns => columns.Length > 1 && columns[1].Equals(playerName, StringComparison.OrdinalIgnoreCase));
             if (playerData == null)
             {
                 Console.WriteLine("Keine Daten gefunden, bitte erneut versuchen.");
@@ -49,3 +54,4 @@ public class CreateDreamTeam : IGame  // Implementierung des IGame Interfaces
         Console.WriteLine("Dein Dream Team wurde erfolgreich erstellt!");
     }
 }
+

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 public class TeamSearch : IGame
@@ -8,10 +7,11 @@ public class TeamSearch : IGame
     private string[] lines;
     private string[] headers;
 
-    public TeamSearch(string[] lines, string[] headers)
+    // Konstruktor erhält DataStore-Instanz
+    public TeamSearch(DataStore dataStore)
     {
-        this.lines = lines;
-        this.headers = headers;
+        this.lines = dataStore.Lines ?? Array.Empty<string>();
+        this.headers = dataStore.Headers ?? Array.Empty<string>();
     }
 
     public void Start()
@@ -31,7 +31,10 @@ public class TeamSearch : IGame
         Console.Write("Gib den Teamnamen ein: ");
         string? input = Console.ReadLine();
         string teamName = input?.Trim() ?? string.Empty;
-        var teamPlayers = lines.Skip(1).Select(line => line.Split(',')).Where(columns => columns[4].Equals(teamName, StringComparison.OrdinalIgnoreCase)).ToList();
+
+        var teamPlayers = lines.Skip(1).Select(line => line.Split(','))
+                               .Where(columns => columns.Length > 4 && columns[4].Equals(teamName, StringComparison.OrdinalIgnoreCase))
+                               .ToList();
         if (teamPlayers.Count == 0)
         {
             Console.WriteLine("Keine Spieler gefunden.");
@@ -41,7 +44,7 @@ public class TeamSearch : IGame
             Console.WriteLine($"Spieler im Team {teamName}:");
             foreach (var player in teamPlayers)
             {
-                Console.WriteLine(player[1]);
+                Console.WriteLine(player[1]); // Annahme, dass der Spielername in der zweiten Spalte steht
             }
         }
     }

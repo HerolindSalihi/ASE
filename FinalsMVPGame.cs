@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 public class FinalsMVPGame : IGame
@@ -8,24 +7,25 @@ public class FinalsMVPGame : IGame
     private Dictionary<string, string> fmvpBySeason;
     private HashSet<string> guessedFMVPs = new HashSet<string>();
 
-    public FinalsMVPGame(string filePath)
+    // Konstruktor erhält DataStore-Instanz
+    public FinalsMVPGame(DataStore dataStore)
     {
         fmvpBySeason = new Dictionary<string, string>();
-        LoadData(filePath);
+        LoadData(dataStore);
     }
 
-    private void LoadData(string filePath)
+    private void LoadData(DataStore dataStore)
     {
-        if (!File.Exists(filePath))
+        if (dataStore.Lines == null || dataStore.Lines.Length == 0)
         {
-            Console.WriteLine($"Die Datei '{filePath}' wurde nicht gefunden.");
-            fmvpBySeason = new Dictionary<string, string>(); // Initialisiere leer, um NullReferenceExceptions zu vermeiden
+            Console.WriteLine("Die Daten für Finals MVPs sind nicht verfügbar.");
             return;
         }
 
-        string[] lines = File.ReadAllLines(filePath);
+        string[] lines = dataStore.Lines;
         fmvpBySeason = lines.Skip(1)
                             .Select(line => line.Split(','))
+                            .Where(fields => fields.Length >= 2)
                             .ToDictionary(fields => fields[0].Trim(), fields => fields[1].Trim());
     }
 

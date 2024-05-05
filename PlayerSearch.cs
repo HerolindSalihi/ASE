@@ -3,17 +3,19 @@ public class PlayerSearch
     private string[] lines;
     private string[] headers;
 
-    public PlayerSearch(string[] lines, string[] headers)
+    // Konstruktor erhält DataStore-Instanz
+    public PlayerSearch(DataStore dataStore)
     {
-        this.lines = lines;
-        this.headers = headers;
+        this.lines = dataStore.Lines;
+        this.headers = dataStore.Headers;
     }
 
     public void SearchByPlayer()
     {
         Console.Write("Gib den Namen des Spielers ein: ");
         string? playerName = Console.ReadLine();
-        var playerData = lines.Skip(1).Select(line => line.Split(',')).FirstOrDefault(columns => columns[1].Equals(playerName, StringComparison.OrdinalIgnoreCase));
+        var playerData = lines.Skip(1).Select(line => line.Split(',')).FirstOrDefault(columns => columns.Length > 1 && columns[1].Equals(playerName, StringComparison.OrdinalIgnoreCase));
+
         if (playerData == null)
         {
             Console.WriteLine("Keine Daten gefunden.");

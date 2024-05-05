@@ -1,27 +1,32 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 public class NBAdivisionsGame : IGame
 {
     private Dictionary<string, List<string>> divisions;
 
-    public NBAdivisionsGame(string filePath)
+    // Konstruktor erhält DataStore-Instanz
+    public NBAdivisionsGame(DataStore dataStore)
     {
         divisions = new Dictionary<string, List<string>>();
-        LoadData(filePath);
+        LoadData(dataStore);  // Laden der Daten aus DataStore
     }
 
-    private void LoadData(string filePath)
+    // Lädt die Daten aus dem DataStore
+    private void LoadData(DataStore dataStore)
     {
-        string[] lines = File.ReadAllLines(filePath);
-        divisions = lines.Skip(1)
-                         .Select(line => line.Split(','))
-                         .GroupBy(fields => fields[1], fields => fields[0])  // Angenommen, Division ist in der zweiten Spalte und Teamname in der ersten
-                         .ToDictionary(group => group.Key, group => group.ToList());
-    }
+        if (dataStore.Lines == null || dataStore.Lines.Length < 2)
+        {
+            throw new InvalidOperationException("Nicht genügend Daten im DataStore vorhanden.");
+        }
 
+        // Verarbeitung der Datenzeilen
+        divisions = dataStore.Lines.Skip(1)
+                                   .Select(line => line.Split(','))
+                                   .GroupBy(fields => fields[1], fields => fields[0])  // Angenommen, Division ist in der zweiten Spalte und Teamname in der ersten
+                                   .ToDictionary(group => group.Key, group => group.ToList());
+    }
 
     public void Start()
     {

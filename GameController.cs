@@ -1,20 +1,22 @@
 public class GameController
 {
-    // Speichere die Daten, die über das Programm verwendet werden
+    // Speichert die Daten, die über das Programm verwendet werden
     private DataStore dataStore;
 
     public void Initialize()
     {
         // Lade Daten
         string filePath = "C:/Users/Acer/OneDrive/Dokumente/ASE/Daten/nba_stats.csv";
-        dataStore = new DataStore(filePath);
+        dataStore = new DataStore(filePath); // Initialisiert den DataStore mit Dateipfad
     }
 
+    // Hauptmenü des Spiels
     public void RunMainMenu()
     {
         string input;
         do
         {
+            // Hauptmenü anzeigen
             Console.WriteLine("\nHauptmenü:");
             Console.WriteLine("1: Infos");
             Console.WriteLine("2: Guessing Games");
@@ -26,13 +28,13 @@ public class GameController
             switch (input)
             {
                 case "1":
-                    ShowInfoMenu();
+                    ShowInfoMenu(); // Informationen anzeigen
                     break;
                 case "2":
-                    ShowGuessingGamesMenu();
+                    ShowGuessingGamesMenu(); // Rate-Spiele anzeigen
                     break;
                 case "3":
-                    ShowSimulationsMenu();
+                    ShowSimulationsMenu(); // Simulationsspiele anzeigen
                     break;
                 case "exit":
                     Console.WriteLine("Programm wird beendet.");
@@ -43,11 +45,14 @@ public class GameController
             }
         } while (input != "exit");
     }
+
+    // Menü für Informationen anzeigen
     public void ShowInfoMenu()
     {
         string input;
         do
         {
+            // Info-Menü anzeigen
             Console.WriteLine("\nInfos-Menu:");
             Console.WriteLine("1: Matchup History");
             Console.WriteLine("2: Player Search");
@@ -63,27 +68,27 @@ public class GameController
             {
                 case "1":
                     var matchupHistory = new MatchupHistory(dataStore);
-                    matchupHistory.DisplayMatchups();
+                    matchupHistory.DisplayMatchups(); // Anzeige der Spielhistorie
                     break;
                 case "2":
                     var playerSearch = new PlayerSearch(dataStore);
-                    playerSearch.SearchByPlayer();
+                    playerSearch.SearchByPlayer(); // Spieler-Suche
                     break;
                 case "3":
                     var teamSchedule = new TeamSchedule(dataStore);
-                    teamSchedule.Start();
+                    teamSchedule.Start(); // Anzeige des Spielplans eines Teams
                     break;
                 case "4":
                     var teamSearch = new TeamSearch(dataStore);
-                    teamSearch.Start();
+                    teamSearch.Start(); // Teamsuche
                     break;
                 case "5":
                     var topTenPlayersByStat = new TopTenPlayersByStat(dataStore);
-                    topTenPlayersByStat.ShowTopTenPlayersByStat();
+                    topTenPlayersByStat.ShowTopTenPlayersByStat(); // Anzeige der Top 10 Spieler nach Statistik
                     break;
                 case "6":
                     var divisionStandings = new DivisionStandings(dataStore);
-                    divisionStandings.DisplayStandings();
+                    divisionStandings.DisplayStandings(); // Anzeige der Divisionstabelle
                     break;
                 case "back":
                     break;
@@ -93,11 +98,14 @@ public class GameController
             }
         } while (input != "back");
     }
+
+    // Menü für Rate-Spiele anzeigen
     public void ShowGuessingGamesMenu()
     {
         string input;
         do
         {
+            // Rate-Spiele-Menü anzeigen
             Console.WriteLine("\nGuessing Games-Menu:");
             Console.WriteLine("1: All Star MVP Game");
             Console.WriteLine("2: All Time Points Game");
@@ -122,63 +130,63 @@ public class GameController
             {
                 case "1":
                     var amvpGame = new AllStarMVPGame(dataStore);
-                    amvpGame.Start();
+                    amvpGame.Start(); // Start des All-Star MVP Spiels
                     break;
                 case "2":
                     var allTimePointsGame = new AllTimePointsGame(dataStore);
-                    allTimePointsGame.Start();
+                    allTimePointsGame.Start(); // Start des All-Time Points Spiels
                     break;
                 case "3":
                     var championshipsGame = new ChampionshipsGame(dataStore);
-                    championshipsGame.Start();
+                    championshipsGame.Start(); // Start des Championships Spiels
                     break;
                 case "4":
                     var dpoyGame = new DefensivePlayerOfTheYearGame(dataStore);
-                    dpoyGame.Start();
+                    dpoyGame.Start(); // Start des Defensive Player of the Year Spiels
                     break;
                 case "5":
                     var fmvpGame = new FinalsMVPGame(dataStore);
-                    fmvpGame.Start();
+                    fmvpGame.Start(); // Start des Finals MVP Spiels
                     break;
                 case "6":
                     var guessThePlayerGame = new GuessThePlayerGame(dataStore);
-                    guessThePlayerGame.Start();
+                    guessThePlayerGame.Start(); // Start des Guess The Player Spiels
                     break;
                 case "7":
                     var guessThePosition = new GuessThePosition(dataStore);
-                    guessThePosition.Start();
+                    guessThePosition.Start(); // Start des Guess The Position Spiels
                     break;
                 case "8":
                     var guessTheTeam = new GuessTheTeam(dataStore);
-                    guessTheTeam.Start();
+                    guessTheTeam.Start(); // Start des Guess The Team Spiels
                     break;
                 case "9":
                     var hallOfFameGame = new HallOfFameGame(dataStore);
-                    hallOfFameGame.Start();
+                    hallOfFameGame.Start(); // Start des Hall of Fame Spiels
                     break;
                 case "10":
                     var mipGame = new MostImprovedPlayerGame(dataStore);
-                    mipGame.Start();
+                    mipGame.Start(); // Start des Most Improved Player Spiels
                     break;
                 case "11":
                     var mvpGame = new MVPGame(dataStore);
-                    mvpGame.Start();
+                    mvpGame.Start(); // Start des MVP Spiels
                     break;
                 case "12":
                     var nbaDivisionsGame = new NBAdivisionsGame(dataStore);
-                    nbaDivisionsGame.Start();
+                    nbaDivisionsGame.Start(); // Start des NBA Divisions Spiels
                     break;
                 case "13":
                     var rookieGame = new RookieOfTheYearGame(dataStore);
-                    rookieGame.Start();
+                    rookieGame.Start(); // Start des Rookie of the Year Spiels
                     break;
                 case "14":
                     var sixthManGame = new SixthManOfTheYearGame(dataStore);
-                    sixthManGame.Start();
+                    sixthManGame.Start(); // Start des Sixth Man of the Year Spiels
                     break;
                 case "15":
                     var statisticsGame = new StatisticsComparisonGame(dataStore);
-                    statisticsGame.Start();
+                    statisticsGame.Start(); // Start des Statistics Comparison Spiels
                     break;
                 case "back":
                     break;
@@ -188,11 +196,14 @@ public class GameController
             }
         } while (input != "back");
     }
+
+    // Menü für Simulations-Spiele anzeigen
     public void ShowSimulationsMenu()
     {
         string input;
         do
         {
+            // Simulations-Spiele-Menü anzeigen
             Console.WriteLine("\nSimulations-Menu:");
             Console.WriteLine("1: Create Dream Team");
             Console.WriteLine("2: Draft Team");
@@ -206,19 +217,19 @@ public class GameController
             {
                 case "1":
                     var createDreamTeam = new CreateDreamTeam(dataStore);
-                    createDreamTeam.Start();
+                    createDreamTeam.Start(); // Start der Dream Team Erstellung
                     break;
                 case "2":
                     var draftTeam = new DraftTeam(dataStore);
-                    draftTeam.Start();
+                    draftTeam.Start(); // Start des Draft Teams
                     break;
                 case "3":
                     var dreamTeamVsChamps = new DreamTeamVsChamps(dataStore);
-                    dreamTeamVsChamps.Start();
+                    dreamTeamVsChamps.Start(); // Start des Dream Team vs Champs Spiels
                     break;
                 case "4":
                     var oneVsOneSimulator = new OneVsOneSimulator(dataStore);
-                    oneVsOneSimulator.Start();
+                    oneVsOneSimulator.Start(); // Start des One vs One Simulators
                     break;
                 case "back":
                     break;
@@ -228,6 +239,4 @@ public class GameController
             }
         } while (input != "back");
     }
-
-
 }
